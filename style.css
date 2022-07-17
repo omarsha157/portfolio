@@ -302,7 +302,12 @@ section {
 
 .projects-section .info {
     padding-top: 1em;
+    
+}
+
+.projects-section small {
     cursor: pointer;
+    user-select: none;
 }
 
 .footer-section {
