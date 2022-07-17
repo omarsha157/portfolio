@@ -30,8 +30,8 @@ nav {
     justify-content: space-between;
     align-items: center;
 
-    background-color: var(--primary-color);
-    color: white;
+    background-color: white;
+    color: var(--seconday-color);
 
     z-index: 9;
     position: fixed;
@@ -46,8 +46,6 @@ nav {
 }
 
 .nav-links {
-    /* width: 38%; */
-
     display: flex;
     justify-content: space-between;
 
@@ -59,37 +57,11 @@ nav {
     list-style-type: none;
     display: inline-block;
     position: relative;
-    margin: 0 0.3em;
-}
-
-.nav-links li::after {
-    content: '';
-    position: absolute;
-    width: 100%;
-    transform: scaleX(0);
-    height: 1.5px;
-    bottom: 0;
-    left: 0;
-    background-color: white;
-    transform-origin: bottom right;
-    transition: transform 0.25s ease-out;
-}
-
-.nav-links li:hover:after {
-    color: var(--seconday-color);
-    transform: scaleX(1);
-    transform-origin: bottom left;
 }
 
 .nav-links a {
     text-decoration: none;
     color: unset;
-
-    transition: all 0.3s;
-    -webkit-transition: all 0.3s;
-    -moz-transition: all 0.3s;
-    -o-transition: all 0.3s;
-    -ms-transition: all 0.3s;
 }
 
 
