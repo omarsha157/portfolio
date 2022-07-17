@@ -1,6 +1,6 @@
 html {
     scroll-behavior: smooth;
-    scroll-padding-top: var(--scroll-padding, 4em);
+    /* scroll-padding-top: var(--scroll-padding, 4em); */
 }
 
 * {
@@ -30,7 +30,6 @@ nav {
     justify-content: space-around;
     align-items: center;
 
-    /* background-color: var(--primary-color); */
     color: var(--seconday-color);
 
     z-index: 9;
@@ -196,10 +195,6 @@ section {
     position: relative;
 }
 
-.aboutme-section p {
-    max-width: 60ch;
-}
-
 .aboutme-section .block {
     height: 200px;
     width: 5%;
@@ -208,10 +203,56 @@ section {
     left: 0;
 }
 
+
+.aboutme-section p {
+    max-width: 60ch;
+    padding-bottom: 0.7em;
+    text-align: justify;
+}
+
+.aboutme-section a {
+    color: var(--primary-color);
+}
+
+.aboutme-section a:hover {
+    color: unset;
+}
+
+/*? for photo gallery */
+
+.image-grid {
+    --gap: 1rem;
+    --num-cols: 4;
+    --row-height: 300px;
+
+    box-sizing: border-box;
+    padding: var(--gap);
+
+    display: grid;
+    grid-template-columns: repeat(var(--num-cols), 1fr);
+    grid-auto-rows: var(--row-height);
+    gap: var(--gap);
+}
+
+.image-grid>img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.image-grid-col-2 {
+    grid-column: span 2;
+}
+
+.image-grid-row-2 {
+    grid-row: span 2;
+}
+
 .projects-section {
     display: flex;
     justify-content: center;
     align-items: center;
+    padding-top: 4em;
     padding-bottom: 4em;
 }
 
@@ -221,7 +262,7 @@ section {
 
 .projects-section .sub {
     display: grid;
-    grid-template-columns: repeat(2 , 1fr);
+    grid-template-columns: repeat(2, 1fr);
     grid-gap: 1em;
 }
 
@@ -266,7 +307,6 @@ section {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    /* padding-top: -3em; */
     background-color: var(--primary-color);
 }
 
@@ -306,7 +346,8 @@ section {
     color: white;
 }
 
-.footer-section form input,textarea {
+.footer-section form input,
+textarea {
     border: none;
     padding: 1em;
     border-radius: 0.3em;
@@ -465,6 +506,20 @@ section {
         display: none;
     }
 
+    /*? for photo gallery */
+
+    .image-grid {
+        --num-cols: 1;
+        --row-height: 200px;
+    }
+    .image-grid-col-2 {
+        grid-column: span 1;
+    }
+    
+    .image-grid-row-2 {
+        grid-row: span 2;
+    }
+
     .projects-section .sub {
         grid-template-columns: 1fr;
     }
@@ -472,7 +527,7 @@ section {
     .footer-section form {
         min-width: 60%;
     }
-    
+
     .footer-section .links {
         width: 50%;
     }
@@ -507,3 +562,4 @@ section {
     }
 
 }
+

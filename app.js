@@ -34,24 +34,24 @@ const navClose = () => {
     const wrapper = document.querySelector('.wrapper')
     const navLinksA = document.querySelectorAll('.nav-links li a');
 
-    for(let i=0; i < navLinksA.length ; i++) {
-        navLinksA[i].addEventListener('click', () =>{
+    for (let i = 0; i < navLinksA.length; i++) {
+        navLinksA[i].addEventListener('click', () => {
             nav.classList.remove('nav-active')
             burger.classList.remove('burger-close')
             wrapper.classList.remove('wrapper-blur')
-    
+
             navLinks.forEach((link, index) => {
                 if (link.style.animation) {
                     link.style.animation = '';
                 } else {
                     link.style.animation = `navLinkFade 0.5s ease forwards ${index / 7 + 0.3}s`;
                 }
-    
+
             })
         })
     }
 
-    
+
 
 }
 
@@ -65,4 +65,4 @@ navSlide();
 
 navClose();
 
-scrollPadding();
+// scrollPadding();
