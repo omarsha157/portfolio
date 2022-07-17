@@ -300,6 +300,10 @@ section {
     width: 25px;
 }
 
+.projects-section .info {
+    padding-top: 1em;
+}
+
 .footer-section {
     height: 100vh;
     display: flex;
