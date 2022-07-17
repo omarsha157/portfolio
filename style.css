@@ -302,6 +302,7 @@ section {
 
 .projects-section .info {
     padding-top: 1em;
+    cursor: pointer;
 }
 
 .footer-section {
