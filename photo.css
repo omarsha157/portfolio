@@ -79,10 +79,12 @@ nav {
     padding-right: 0.3em;
 
     border-radius: 1rem;
+
+    color: var(--seconday-color);
 }
 
 .back-to-top:active {
-    color: var(--seconday-color);
+    color: var(--primary-color);
 }
 
 
@@ -125,6 +127,11 @@ nav {
 
     .nav-links li::after {
         content: none;
+    }
+
+    .back-to-top {
+        right: 10%;
+        bottom: 30px;
     }
 
     .image-grid {
