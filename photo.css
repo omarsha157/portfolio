@@ -64,8 +64,26 @@ nav {
     color: unset;
 }
 
+.back-to-top {
+    text-decoration: none;
+    transform: scale(2) rotate(-90deg);
 
+    position: fixed;
+    bottom: 50px;
+    right: 5%;
+    background-color: white;
 
+    padding-top: 0.1em;
+    padding-bottom: 0.2em;
+    padding-left: 0.3em;
+    padding-right: 0.3em;
+
+    border-radius: 1rem;
+}
+
+.back-to-top:active {
+    color: var(--seconday-color);
+}
 
 
 .image-grid {
