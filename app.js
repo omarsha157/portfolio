@@ -27,6 +27,8 @@ const navSlide = () => {
 
 }
 
+//* below code is for closing the navslide when a link is clicked
+
 const navClose = () => {
     const burger = document.querySelector('.burger');
     const nav = document.querySelector('.nav-links');

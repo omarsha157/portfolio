@@ -411,9 +411,10 @@ textarea {
 
 @media only screen and (max-width: 992px) {
 
+    /* * may not need below code becuase after change from transform translate there is no horizontal scrolling */
     body {
         overflow-x: hidden;
-    }
+    } 
 
     nav {
         justify-content: space-between;
@@ -432,7 +433,7 @@ textarea {
         padding: 0;
 
         position: absolute;
-        right: 0;
+        right: -100%;
         top: 0vh;
 
         background-color: rgba(255, 255, 255, 0.39);
@@ -443,17 +444,11 @@ textarea {
         justify-content: space-evenly;
 
 
-        transform: translateX(100%);
-        -webkit-transform: translateX(100%);
-        -moz-transform: translateX(100%);
-        -o-transform: translateX(100%);
-        -ms-transform: translateX(100%);
-
-        transition: transform 0.8s ease-in-out;
-        -webkit-transition: transform 0.8s ease-in-out;
-        -moz-transition: transform 0.8s ease-in-out;
-        -o-transition: transform 0.8s ease-in-out;
-        -ms-transition: transform 0.8s ease-in-out;
+        transition: 0.8s ease-in-out;
+        -webkit-transition: 0.8s ease-in-out;
+        -moz-transition: 0.8s ease-in-out;
+        -o-transition: 0.8s ease-in-out;
+        -ms-transition: 0.8s ease-in-out;
     }
 
     .nav-links li {
@@ -465,11 +460,7 @@ textarea {
     }
 
     .nav-active {
-        transform: translateX(0);
-        -webkit-transform: translateX(0);
-        -moz-transform: translateX(0);
-        -o-transform: translateX(0);
-        -ms-transform: translateX(0);
+        right: 0%;
     }
 
     .burger-close .line-1 {
