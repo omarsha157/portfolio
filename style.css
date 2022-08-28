@@ -352,6 +352,7 @@ section {
     border-radius: 1rem;
 
     color: var(--seconday-color);
+    cursor: pointer;
 }
 
 .back-to-top:active {

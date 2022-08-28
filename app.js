@@ -147,6 +147,9 @@ function scrollTo() {
     const logo = document.querySelector('.logo');
     logo.addEventListener('click', () => { window.scroll(0,0) })
 
+    const backToTop = document.querySelector('.back-to-top');
+
+
     const aboutMe = document.querySelector('#aboutme');
     const aboutMeBtn = document.querySelector('#aboutmebtn');
     
@@ -155,6 +158,10 @@ function scrollTo() {
     
     const contact = document.querySelector('#contact');
     const contactBtn = document.querySelector('#contactbtn');
+
+    if(backToTop) {
+        backToTop.addEventListener('click', () => { window.scroll(0,0) })
+    }
     
     if(aboutMe && projects && contact) {
         aboutMeBtn.addEventListener('click', () => { aboutMe.scrollIntoView() })
