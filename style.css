@@ -1,5 +1,6 @@
 html {
     scroll-behavior: smooth;
+
     /* scroll-padding-top: var(--scroll-padding, 4em); */
 }
 
@@ -13,12 +14,93 @@ html {
 body {
     font-family: 'Playfair Display', serif;
     color: var(--seconday-color);
+    background-color: var(--bg-color);
 }
 
 :root {
-    --primary-color: #5EB1BF;
-    --seconday-color: #042A2B;
-    --tertiary-color: #CDEDF6;
+    --primary-color-light: #5EB1BF;
+    --seconday-color-light: #042A2B;
+    --tertiary-color-light: #CDEDF6;
+    --bg-color-light: #ffffff;
+    --navslide-color-light: rgba(255, 255, 255, 0.39);
+    --boxshadow-one-light: 2px 5px 15px rgba(0, 0, 0, 0.2);
+    --boxshadow-two-light: 2px 5px 15px rgba(0, 0, 0, 0.4);
+    --hero-image-light: url(./assets/logos-and-icons/hero-bg.jpg);
+    --logo-image-light: url(./assets/logos-and-icons/omar-logo-dark.png);
+    --footer-color-light: #5EB1BF;
+    --button-color-light: #CDEDF6;
+
+    --primary-color-dark: #5EB1BF;
+    --seconday-color-dark: #c1dadb;
+    --tertiary-color-dark: #CDEDF6;
+    --bg-color-dark: #0d1426;
+    --navslide-color-dark: rgba(20, 20, 20, 0.39);
+    --boxshadow-one-dark: 2px 5px 15px rgba(56, 62, 69, 0.2);
+    --boxshadow-two-dark: 2px 5px 15px rgba(0, 0, 0, 0.4);
+    --hero-image-dark: url(./assets/logos-and-icons/hero-bg-dark.jpg);
+    --logo-image-dark: url(./assets/logos-and-icons/omar-logo-white.png);
+    --footer-color-dark: #172234;
+    --button-color-dark: #042A2B;
+}
+
+@media(prefers-color-scheme: dark) {
+    :root {
+        --primary-color: var(--primary-color-dark);
+        --seconday-color: var(--seconday-color-dark);
+        --tertiary-color: var(--tertiary-color-dark);
+        --bg-color: var(--bg-color-dark);
+        --navslide-color: var(--navslide-color-dark);
+        --boxshadow-one: var(--boxshadow-one-dark);
+        --boxshadow-two: var(--boxshadow-two-dark);
+        --hero-image: var(--hero-image-dark);
+        --logo-image: var(--logo-image-dark);
+        --footer-color: var(--footer-color-dark);
+        --button-color: var(--button-color-dark);
+    }
+}
+
+@media(prefers-color-scheme: light) {
+    :root {
+        --primary-color: var(--primary-color-light);
+        --seconday-color: var(--seconday-color-light);
+        --tertiary-color: var(--tertiary-color-light);
+        --bg-color: var(--bg-color-light);
+        --navslide-color: var(--navslide-color-light);
+        --boxshadow-one: var(--boxshadow-one-light);
+        --boxshadow-two: var(--boxshadow-two-light);
+        --hero-image: var(--hero-image-light);
+        --logo-image: var(--logo-image-light);
+        --footer-color: var(--footer-color-light);
+        --button-color: var(--button-color-light);
+    }
+}
+
+[color-scheme="light"] {
+        --primary-color: var(--primary-color-light);
+        --seconday-color: var(--seconday-color-light);
+        --tertiary-color: var(--tertiary-color-light);
+        --bg-color: var(--bg-color-light);
+        --navslide-color: var(--navslide-color-light);
+        --boxshadow-one: var(--boxshadow-one-light);
+        --boxshadow-two: var(--boxshadow-two-light);
+        --hero-image: var(--hero-image-light);
+        --logo-image: var(--logo-image-light);
+        --footer-color: var(--footer-color-light);
+        --button-color: var(--button-color-light);
+}
+
+[color-scheme="dark"] {
+        --primary-color: var(--primary-color-dark);
+        --seconday-color: var(--seconday-color-dark);
+        --tertiary-color: var(--tertiary-color-dark);
+        --bg-color: var(--bg-color-dark);
+        --navslide-color: var(--navslide-color-dark);
+        --boxshadow-one: var(--boxshadow-one-dark);
+        --boxshadow-two: var(--boxshadow-two-dark);
+        --hero-image: var(--hero-image-dark);
+        --logo-image: var(--logo-image-dark);
+        --footer-color: var(--footer-color-dark);
+        --button-color: var(--button-color-dark);
 }
 
 nav {
@@ -37,15 +119,19 @@ nav {
 }
 
 .logo {
+    height: 38px;
+    width: 6rem;
     z-index: 10;
+    background-image: var(--logo-image);
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    cursor: pointer;
 }
 
-.logo img {
-    width: 6rem;
-}
 
 .nav-links {
-    width: 38%;
+    width: 50%;
 
     display: flex;
     justify-content: space-between;
@@ -58,6 +144,7 @@ nav {
     list-style-type: none;
     display: inline-block;
     position: relative;
+    cursor: pointer;
 }
 
 .nav-links li::after {
@@ -149,7 +236,7 @@ section {
 .hero-section {
     height: 100vh;
 
-    background-image: url(./assets/logos-and-icons/hero-bg.jpg);
+    background-image: var(--hero-image);
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -248,6 +335,31 @@ section {
     grid-row: span 2;
 }
 
+.back-to-top {
+    text-decoration: none;
+    transform: scale(2) rotate(-90deg);
+
+    position: fixed;
+    bottom: 50px;
+    right: 5%;
+    background-color: var(--bg-color);
+
+    padding-top: 0em;
+    padding-bottom: 0.13em;
+    padding-left: 0.24em;
+    padding-right: 0.24em;
+
+    border-radius: 1rem;
+
+    color: var(--seconday-color);
+}
+
+.back-to-top:active {
+    color: var(--primary-color);
+}
+
+
+
 .projects-section {
     display: flex;
     justify-content: center;
@@ -269,12 +381,12 @@ section {
 .projects-section .card {
     padding: 0.5em;
     border-radius: 0.6rem;
-    box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.2);
+    box-shadow: var(--boxshadow-one);
 }
 
 .projects-section .card:hover {
-    transform: scale(1.01);
-    box-shadow: 2px 5px 15px rgba(0, 0, 0, 0.4);
+    transform: scale(1.001);
+    box-shadow: var(--boxshadow-two);
 }
 
 .projects-section .card img {
@@ -306,9 +418,11 @@ section {
     align-items: center;
 }
 
-.projects-section .heading img {
+.projects-section .heading svg {
     width: 25px;
+    fill: var(--seconday-color);
 }
+
 
 .projects-section .info {
     padding-top: 1em;
@@ -327,7 +441,7 @@ section {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: var(--primary-color);
+    background-color: var(--footer-color);
 }
 
 .footer-section h1 {
@@ -348,6 +462,7 @@ section {
 }
 
 .footer-section form button {
+    cursor: pointer;
     padding: 0.5em 1.5em;
     border: none;
 
@@ -363,7 +478,7 @@ section {
 .footer-section form button:hover {
     border: 2px solid transparent;
     background-color: var(--seconday-color);
-    color: white;
+    color: var(--button-color);
 }
 
 .footer-section form input,
@@ -403,7 +518,7 @@ textarea {
 }
 
 .footer-section ul li a:hover svg {
-    fill: var(--seconday-color);
+    fill: var(--secondary-color);
 }
 
 
@@ -436,7 +551,7 @@ textarea {
         right: -100%;
         top: 0vh;
 
-        background-color: rgba(255, 255, 255, 0.39);
+        background-color: var(--navslide-color);
 
         display: flex;
         flex-direction: column;
@@ -541,6 +656,11 @@ textarea {
 
     .footer-section .links {
         width: 50%;
+    }
+
+    .back-to-top {
+        bottom: 30px;
+        right: 9%;
     }
 
 }
