@@ -547,6 +547,7 @@ textarea {
         min-width: 100%;
         margin: 0;
         padding: 0;
+        padding-bottom: 1rem;
 
         position: absolute;
         right: -100%;
