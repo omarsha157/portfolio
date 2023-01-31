@@ -1,0 +1,83 @@
+<app-main-nav></app-main-nav>
+
+<div class="projects-title" *ngIf="isMobile" >Projects</div>
+<div class="projects-wrapper">
+    
+        <mat-card (click)="openModal('todo')" class="card">
+            <mat-card-header>
+                <mat-card-title>Todo app</mat-card-title>
+                <!-- <mat-card-subtitle>Dog Breed</mat-card-subtitle> -->
+            </mat-card-header>
+            <img mat-card-image src="./assets/images/todo-app.png" alt="">
+            <!-- <mat-card-content>
+                <p>
+                    A todo app made with Angular Bootstrap Node.js Express.js Mongodb atlas.
+                </p>
+            </mat-card-content> -->
+        </mat-card>
+
+        <mat-card (click)="openModal('weather')" class="card">
+            <mat-card-header>
+                <mat-card-title>Weather app</mat-card-title>
+            </mat-card-header>
+            <img mat-card-image src="./assets/images/weather-project.png" alt="">
+        </mat-card>
+
+        <mat-card (click)="openModal('rubiks')" class="card">
+            <mat-card-header>
+                <mat-card-title>Rubik's cube</mat-card-title>
+            </mat-card-header>
+            <img mat-card-image src="./assets/images/rubiks-cube-project.png" alt="">
+        </mat-card>
+
+        <mat-card (click)="openModal('portfolio')" class="card">
+            <mat-card-header>
+                <mat-card-title>Portfolio (old)</mat-card-title>
+            </mat-card-header>
+            <img mat-card-image src="./assets/images/portfolio-old.jpeg" alt="">
+        </mat-card>
+
+        <mat-card (click)="openModal('bank')" class="card">
+            <mat-card-header>
+                <mat-card-title>Bank app</mat-card-title>
+            </mat-card-header>
+            <img mat-card-image src="./assets/images/github-card.jpg" alt="">
+        </mat-card>
+
+        <mat-card (click)="openModal('coffee')" class="card">
+            <mat-card-header>
+                <mat-card-title>Coffee</mat-card-title>
+            </mat-card-header>
+            <img mat-card-image src="./assets/images/coffee-page-card.png" alt="">
+        </mat-card>
+
+        <mat-card (click)="openModal('camera')" class="card">
+            <mat-card-header>
+                <mat-card-title>Camera</mat-card-title>
+            </mat-card-header>
+            <img mat-card-image src="./assets/images/camera-project.png" alt="">
+        </mat-card>
+
+        <mat-card (click)="openModal('signin')" class="card">
+            <mat-card-header>
+                <mat-card-title>Sign in</mat-card-title>
+            </mat-card-header>
+            <img mat-card-image src="./assets/images/sign-in-page-card.png" alt="">
+        </mat-card>
+
+        
+
+</div>
+
+<div class="projects-title">Experiments</div>
+<p>These are some ideas that I tested out and they may never be completed or may not have any styling, as the title suggests these are just experiments.</p>
+<div class="projects-wrapper">
+
+        <mat-card (click)="openModal('learning')" class="card">
+            <mat-card-header>
+                <mat-card-title>Learning</mat-card-title>
+            </mat-card-header>
+            <img mat-card-image src="./assets/images/learning-project.png" alt="">
+        </mat-card>
+
+</div>

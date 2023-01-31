@@ -1,0 +1,65 @@
+.hero-title {
+    height: 85vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-title div {
+    display: flex;
+    flex-direction: column;
+}
+
+.hero-title div > p {
+    margin: 0;
+}
+
+.subtitle {
+    font-size: 1.7rem;
+    color: var(--tertiary-clr);
+}
+
+.subtitle-1 {
+    align-self: flex-start;
+    transform: translateY(1.3rem);
+}
+
+.title {
+    align-self: center;
+    font-size: 8rem;
+    color: var(--secondary-clr);
+}
+
+.subtitle-2 {
+    align-self: flex-end;
+    transform: translateY(-1.7rem);
+}
+
+@media only screen and (max-width: 960px) {
+    .title {
+        font-size: 15vw;
+    }
+
+    .subtitle {
+        font-size: 4vw;
+    }
+
+    .subtitle-1 {
+        transform: translateY(3vw);
+    }
+
+    .subtitle-2 {
+        transform: translateY(-4vw);
+    }
+}
+
+@media only screen and (max-width: 600px) {
+    .title {
+        font-size: 22vw;
+    }
+
+    .subtitle {
+        font-size: 7vw;
+    }
+
+}

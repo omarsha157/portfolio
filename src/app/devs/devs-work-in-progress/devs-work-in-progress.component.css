@@ -1,0 +1,12 @@
+.work-in-progress {
+    padding-top: 1rem;
+}
+
+.work-in-progress p {
+    font-size: 1.3rem;
+    line-height: 2.5rem;
+}
+
+.work-in-progress a {
+    color: var(--devs-secondary-clr);
+}

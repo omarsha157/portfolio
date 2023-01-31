@@ -1,0 +1,18 @@
+.docs-wrapper {
+    padding-top: 1rem;
+}
+
+.docs-wrapper li {
+    margin: 0.2rem 0;
+}
+
+.docs-wrapper li a {
+    text-decoration: none;
+    color: unset;
+    font-size: 1.5rem;
+    padding: 0.3rem;
+}
+
+.docs-wrapper li:hover {
+    transform: rotate(10deg);
+}

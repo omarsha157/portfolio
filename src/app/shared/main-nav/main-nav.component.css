@@ -1,0 +1,134 @@
+nav {
+    background-color: var(--primary-clr);
+    height: 8vh;
+    
+
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 99;
+}
+
+.logo {
+    width: 100px;
+    cursor: pointer;
+    transform: translateY(2px);
+}
+
+.navlinks {
+    min-width: 50%;
+    display: flex;
+    justify-content: space-between;
+    transform: translateY(6px);
+    transition: right 0.5s ease-in-out;
+}
+
+.navlinks svg {
+    margin: 0;
+    width: 30px;
+    fill: var(--secondary-clr);
+    transform: translateY(-7px);
+}
+
+.navlinks li {
+    list-style: none;
+}
+
+.navlinks a {
+    text-decoration: none;
+    color: var(--secondary-clr);
+    font-size: 1.3rem;
+}
+
+.nav-highlight a {
+    /* color: var(--tertiary-clr); */
+    border-bottom: 3px solid var(--secondary-clr);
+}
+
+.navlinks li:hover {
+    transform: translateY(-2px);
+}
+
+.hide-home {
+    display: none;
+}
+
+.burger div {
+    height: 3px;
+    width: 30px;
+    margin: 5px;
+    background-color: var(--secondary-clr);
+    border-radius: 1rem;
+    transition: transform 0.3s;
+}
+
+.burger {
+    display: none;
+    cursor: pointer;
+}
+
+
+@media only screen and (max-width: 960px) {
+
+    nav {
+        padding: 0 1rem;
+        justify-content: space-between;
+    }
+
+    .navlinks {
+        height: 100vh;
+        width: 100%;
+
+        position: absolute;
+        top: 5vh;
+        right: -110%;
+
+        flex-direction: column;
+        align-items: flex-end;
+        justify-content: center;
+        background-color: var(--primary-clr);
+    }
+
+    .navlinks li {
+        padding-right: 3rem;
+        padding-bottom: 4rem;
+    }
+
+    .navlinks li:hover {
+        transform: none;
+    }
+
+    .navlinks a:active {
+        color: var(--tertiary-clr);
+    }
+
+    .navlinks a:active svg {
+        fill: var(--tertiary-clr);
+    }
+
+    .nav-active {
+        right: 0;
+    }
+
+    .burger {
+        display: block;
+    }
+
+    .burger-close .line-1{
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .burger-close .line-2{
+        opacity: 0;
+    }
+
+    .burger-close .line-3{
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+}

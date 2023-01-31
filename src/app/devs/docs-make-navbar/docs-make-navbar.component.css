@@ -1,0 +1,24 @@
+/* width */
+::-webkit-scrollbar {
+    height: 4px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: rgba(241, 241, 241,0.3);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: rgb(255, 255, 255);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: rgb(165, 165, 165);
+}
+
+.make-navbar-wrapper .code {
+    background-color: #1c2129;
+    overflow-x: scroll;
+}

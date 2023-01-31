@@ -1,0 +1,86 @@
+/* You can add global styles to this file, and also import other style files */
+
+* {
+    margin: 0;
+    box-sizing: border-box;
+}
+
+/* html, body { height: 100%; } */
+
+:root {
+    --primary-clr: #f0f7ee;
+    --secondary-clr: #86bba2;
+    --tertiary-clr: #1c6073;
+    --devs-primary-clr: #0d2d2a;
+    --devs-secondary-clr: #28908c;
+    --devs-tertiary-clr: #d8a916;
+}
+
+/* --devs-primary-clr: #2c3e37;
+--devs-secondary-clr: #497b8f;
+--devs-tertiary-clr: #d8a916; */
+
+body {
+    overflow-x: hidden;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.bit-font {
+    font-family: 'Press Start 2P', cursive;
+}
+
+
+/* modal styling for projects components in projects module*/
+
+.modal-wrapper {
+    position: relative;
+}
+
+.modal-close {
+    position: absolute;
+    top: -12px;
+    right: -12px;
+}
+
+.modal-close button {
+    padding: 3px 7px;
+    /* background-color: rgb(228, 55, 55); */
+    background-color: white;
+    border: none;
+    border-radius: 1rem;
+    /* color: white; */
+    color: rgb(228, 55, 55);
+    cursor: pointer;
+}
+
+.modal-close button:focus{
+    outline: none;
+}
+
+.modal-title {
+    padding-bottom: 1rem;
+}
+
+.modal-tech-used {
+    padding-left: 0.2rem;
+    font-size: 0.9rem;
+    color: rgb(122, 122, 122);
+}
+
+.modal-github-links {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1rem;
+    flex-wrap: wrap;
+}
+
+.modal-github-links div {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.modal-github-links a {
+    margin: 5px;
+}

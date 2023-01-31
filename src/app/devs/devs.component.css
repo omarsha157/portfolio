@@ -1,0 +1,17 @@
+.devs-wrapper {
+    min-height: 100vh;
+
+    padding-left: 13%;
+    padding-right: 13%;
+    padding-top: 10vh;
+
+    background-color: var(--devs-primary-clr);
+    color: var(--devs-tertiary-clr);
+}
+
+@media only screen and (max-width: 992px) {
+    .devs-wrapper {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}

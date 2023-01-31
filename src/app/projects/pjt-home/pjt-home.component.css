@@ -1,0 +1,28 @@
+.projects-title {
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: var(--secondary-clr);
+}
+
+.projects-wrapper {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+}
+
+.card {
+    margin: 0.8rem;
+    cursor: pointer;
+
+    /* max-width: 350px; */
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.182);
+}
+
+.card:hover {
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.305);
+}
+
+@media only screen and (max-width: 600px) {
+    .projects-wrapper {
+        grid-template-columns: 1fr;
+    }
+}

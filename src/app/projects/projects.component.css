@@ -1,0 +1,13 @@
+.project-wrapper {
+    padding-left: 13%;
+    padding-right: 13%;
+    padding-top: 10vh;
+}
+
+@media only screen and (max-width: 992px) {
+    .project-wrapper {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
+

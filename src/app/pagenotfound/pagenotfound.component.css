@@ -1,0 +1,33 @@
+.pagenotfound-wrapper {
+    height: 100vh;
+    padding-left: 13%;
+    padding-right: 13%;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.title {
+    font-size: 10rem;
+    color: var(--secondary-clr);
+}
+
+.sub-title {
+    font-size: 2rem;
+    color: var(--secondary-clr);
+    transform: translateY(-2rem);
+}
+
+button {
+    color: white;
+    background-color: var(--secondary-clr);
+}
+
+@media only screen and (max-width: 960px) {
+    .pagenotfound-wrapper {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+}
