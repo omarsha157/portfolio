@@ -15,6 +15,7 @@ import { PjtCameraComponent } from './pjt-camera/pjt-camera.component';
 import { PjtSigninComponent } from './pjt-signin/pjt-signin.component';
 import { PjtExpLearningComponent } from './pjt-exp-learning/pjt-exp-learning.component';
 import { PjtPortfolioComponent } from './pjt-portfolio/pjt-portfolio.component';
+import { PjtPortfolioTwoComponent } from './pjt-portfolio-two/pjt-portfolio-two.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { PjtPortfolioComponent } from './pjt-portfolio/pjt-portfolio.component';
     PjtCameraComponent,
     PjtSigninComponent,
     PjtExpLearningComponent,
-    PjtPortfolioComponent
+    PjtPortfolioComponent,
+    PjtPortfolioTwoComponent
   ],
   imports: [
     CommonModule,
