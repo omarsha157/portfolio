@@ -1,11 +1,11 @@
 // Hero particles (three.js), loaded only on the home page, only where it will run well.
 // The hero name is hidden while they load; any failure brings the plain text back.
-const heroName = document.querySelector('.dot-hero');
-const canParticles = heroName
-  && !matchMedia('(prefers-reduced-motion: reduce)').matches
+const can3D = !matchMedia('(prefers-reduced-motion: reduce)').matches
   && (navigator.hardwareConcurrency || 4) >= 4
   && (navigator.deviceMemory || 4) >= 2
   && (() => { try { return !!document.createElement('canvas').getContext('webgl'); } catch { return false; } })();
+const heroName = document.querySelector('.dot-hero');
+const canParticles = heroName && can3D;
 if (canParticles) {
   const hero = heroName.closest('.hero');
   hero.classList.add('particles-pending');
@@ -17,6 +17,25 @@ if (canParticles) {
     .finally(() => hero.classList.remove('particles-pending'));
 }
 
+
+// 3D project art: each illustration loads its 3D version shortly before it scrolls into view.
+const disposers = [];
+if (can3D) {
+  const arts = document.querySelectorAll('[data-art]');
+  if (arts.length) {
+    let lib;
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        io.unobserve(e.target);
+        (lib ||= import('./project-art.js')).then((m) => { const d = m.mount(e.target, e.target.dataset.art); if (d) disposers.push(d); }).catch(() => {});
+      }
+    }, { rootMargin: '300px 0px' });
+    arts.forEach((a) => io.observe(a));
+  }
+}
+// Free GPU memory when leaving the page.
+addEventListener('pagehide', () => { while (disposers.length) disposers.pop()(); });
 
 // Reveal rows as they scroll in. Content is visible without JS; reduced motion skips this entirely.
 const els = document.querySelectorAll('.reveal');

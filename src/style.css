@@ -228,3 +228,8 @@ a:hover .arrow { transform: translateX(3px); }
 .hero > :not(.hero-canvas) { position: relative; z-index: 1; }
 .hero-canvas { position: absolute; top: 0; z-index: 0; pointer-events: none; display: block; }
 .particles-pending .dot-hero, .particles-on .dot-hero:not([style*=color]) { color: transparent; }
+
+/* ---------- 3D project art ---------- */
+[data-art] { position: relative; }
+.art-canvas { position: absolute; display: block; pointer-events: none; }
+.art-3d .dot-art { visibility: hidden; }

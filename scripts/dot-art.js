@@ -7,7 +7,7 @@ function rng(seed) {
 }
 
 // Each shape maps (x, y) in 0..1 to a density 0..1.
-const shapes = {
+export const shapes = {
   // A loop with a gap and an arrowhead: the fix cycle.
   loop(x, y) {
     const dx = x - 0.5, dy = (y - 0.5) * 1.15;
