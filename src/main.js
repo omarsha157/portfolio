@@ -1,4 +1,4 @@
-import { once } from './once.js';
+import { once, seen, mark } from './once.js';
 // Hero particles (three.js), loaded only on the home page, only where it will run well.
 // The hero name is hidden while they load; any failure brings the plain text back.
 const can3D = !matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -87,7 +87,7 @@ for (const b of document.querySelectorAll('[data-copy]')) {
 
 // Desktop pointer touches: magnetic buttons and the orange square over the project art.
 if (matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  const magnets = [...document.querySelectorAll('.btn, .nav-cta')].filter((b) => !b.disabled);
+  const magnets = [...document.querySelectorAll('.btn, .nav-cta, .pill')].filter((b) => !b.disabled);
   const arts = [...document.querySelectorAll('[data-art]')];
   const dot = arts.length ? Object.assign(document.createElement('div'), { className: 'art-cursor' }) : null;
   if (dot) { dot.setAttribute('aria-hidden', 'true'); document.body.append(dot); }
@@ -115,4 +115,37 @@ if (matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(pr
   }
   // Scrolling moves things under a still pointer; recheck without ever touching the scroll.
   addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+}
+
+// Footer: live local time, back-to-top, and the pixel figure's walk to its spot.
+for (const c of document.querySelectorAll('.clock[data-tz]')) {
+  const fmt = new Intl.DateTimeFormat('en-GB', { timeZone: c.dataset.tz, hour: '2-digit', minute: '2-digit', hour12: false });
+  const tick = () => { c.textContent = `${fmt.format(new Date())} IST`; };
+  tick(); setInterval(tick, 20000);
+}
+for (const a of document.querySelectorAll('.to-top')) {
+  a.addEventListener('click', (e) => {
+    e.preventDefault();
+    scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    document.querySelector('#main')?.focus({ preventScroll: true });
+  });
+}
+const walker = document.querySelector('.walker');
+if (walker && 'IntersectionObserver' in window && !matchMedia('(prefers-reduced-motion: reduce)').matches && !seen('intro:walker')) {
+  const ground = walker.parentElement;
+  // Distance from its resting spot to just past the panel's left edge (SVG has no offsetLeft).
+  const offLeft = () => { const g = ground.getBoundingClientRect(), w = walker.getBoundingClientRect(); return -(w.right - g.left); };
+  let start = offLeft();                                              // measured at the resting spot
+  walker.style.transform = `translateX(${start}px)`;                 // wait out of sight until the footer is seen
+  addEventListener('resize', () => { if (walker.style.transform) { walker.style.transform = ''; start = offLeft(); walker.style.transform = `translateX(${start}px)`; } });
+  const io = new IntersectionObserver(([e]) => {
+    if (!e.isIntersecting) return;
+    io.disconnect(); mark('intro:walker');
+    walker.classList.add('walking');
+    const walk = walker.animate([{ transform: `translateX(${start}px)` }, { transform: 'translateX(0)' }], { duration: 3200, easing: 'linear' });
+    walker.style.transform = '';
+    walk.finished.then(() => { clearInterval(steps); walker.classList.remove('walking', 'step-a'); });
+    const steps = setInterval(() => walker.classList.toggle('step-a'), 170);
+  }, { threshold: 0.6 });
+  io.observe(ground);
 }
