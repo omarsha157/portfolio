@@ -8,9 +8,10 @@ const vert = /* glsl */ `
 attribute vec2 aTarget;
 attribute vec2 aStart;
 attribute float aSeed;
-attribute float aKind;          // 0 = letter, 1 = dust, 2 = accent dust
+attribute float aKind;
+attribute float aSize;          // 0 = letter, 1 = dust, 2 = accent dust
 uniform vec2 uRes;
-uniform float uTime, uIntro, uScroll, uSize, uRadius, uPush, uDpr;
+uniform float uTime, uIntro, uScroll, uSize, uRadius, uPush, uDpr, uLetters;
 uniform vec2 uMouse;
 varying float vAlpha;
 varying float vKind;
@@ -24,7 +25,7 @@ void main() {
     float e = 1.0 - pow(1.0 - t, 4.0);
     vec2 swirl = vec2(-(aTarget.y - aStart.y), aTarget.x - aStart.x) * 0.18 * sin(t * 3.14159);
     p = mix(aStart, aTarget, e) + swirl;
-    alpha = smoothstep(0.0, 0.25, t);
+    alpha = smoothstep(0.0, 0.25, t) * uLetters;
   } else {
     // Dust: slow drift around its home position.
     p = aTarget + vec2(sin(uTime * 0.21 + aSeed * 40.0), cos(uTime * 0.17 + aSeed * 31.0)) * 14.0;
@@ -44,7 +45,7 @@ void main() {
 
   vec2 clip = p / uRes * 2.0 - 1.0;
   gl_Position = vec4(clip.x, -clip.y, 0.0, 1.0);
-  float size = aKind < 0.5 ? uSize * (1.0 - 0.45 * f) : uSize * (aKind > 1.5 ? 0.9 : 0.6);
+  float size = aKind < 0.5 ? aSize * (1.0 - 0.45 * f) : uSize * (aKind > 1.5 ? 0.9 : 0.6);
   gl_PointSize = max(1.0, size * uDpr);
   vAlpha = alpha;
   vKind = aKind;
@@ -79,7 +80,7 @@ export function start(h1) {
   const css = getComputedStyle(document.documentElement);
   const uniforms = {
     uRes: { value: [1, 1] }, uTime: { value: 0 }, uIntro: { value: 0 }, uScroll: { value: 0 },
-    uSize: { value: 3 }, uRadius: { value: 90 }, uPush: { value: 0 }, uDpr: { value: dpr },
+    uSize: { value: 3 }, uRadius: { value: 90 }, uPush: { value: 0 }, uDpr: { value: dpr }, uLetters: { value: 1 },
     uMouse: { value: [-9999, -9999] },
     uInk: { value: new Color(css.getPropertyValue('--ink').trim() || '#121211') },
     uAccent: { value: new Color(css.getPropertyValue('--accent').trim() || '#e4572e') },
@@ -87,6 +88,7 @@ export function start(h1) {
   const material = new ShaderMaterial({ vertexShader: vert, fragmentShader: frag, uniforms, transparent: true, depthTest: false, depthWrite: false });
   let points = null;
   let origin = { x: 0, y: 0 };
+  let nameBox = { x0: 0, y0: 0, x1: 0, y1: 0 };  // the letters' extent, canvas px
 
   // Sample the h1's glyphs where the browser actually laid them out (handles wrapping and spacing).
   function build() {
@@ -125,12 +127,41 @@ export function start(h1) {
       ctx.fillText(text[i].toUpperCase(), r.left + r.width / 2, r.top - heroBox.top + (r.height - asc - desc) / 2 + asc);
     }
     const data = ctx.getImageData(0, 0, W, H).data;
+    const hb = h1.getBoundingClientRect();
+    nameBox = { x0: hb.left, y0: hb.top - heroBox.top, x1: hb.right, y1: hb.bottom - heroBox.top };
 
-    const target = [], start = [], seed = [], kind = [];
-    for (let y = step / 2; y < H; y += step) {
-      for (let x = step / 2; x < W; x += step) {
-        if (data[(Math.floor(y) * W + Math.floor(x)) * 4 + 3] < 128) continue;
-        target.push(x, y);
+    // Find each round dot of the font (connected ink), then tile it exactly with small squares,
+    // so at rest the particles reproduce the font's dots rather than a resampled grid.
+    const x0 = Math.max(0, Math.floor(nameBox.x0) - 4), x1 = Math.min(W, Math.ceil(nameBox.x1) + 4);
+    const y0 = Math.max(0, Math.floor(nameBox.y0) - 4), y1 = Math.min(H, Math.ceil(nameBox.y1) + 4);
+    const ink = (x, y) => data[(y * W + x) * 4 + 3] >= 128;
+    const seen = new Uint8Array(W * H), stack = [], dots = [];
+    for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+      if (seen[y * W + x] || !ink(x, y)) continue;
+      let bx0 = x, bx1 = x, by0 = y, by1 = y;
+      stack.push(x, y); seen[y * W + x] = 1;
+      while (stack.length) {
+        const cy = stack.pop(), cx = stack.pop();
+        if (cx < bx0) bx0 = cx; if (cx > bx1) bx1 = cx; if (cy < by0) by0 = cy; if (cy > by1) by1 = cy;
+        for (const [nx, ny] of [[cx + 1, cy], [cx - 1, cy], [cx, cy + 1], [cx, cy - 1]]) {
+          if (nx < x0 || nx >= x1 || ny < y0 || ny >= y1 || seen[ny * W + nx] || !ink(nx, ny)) continue;
+          seen[ny * W + nx] = 1; stack.push(nx, ny);
+        }
+      }
+      dots.push([bx0, by0, bx1 + 1, by1 + 1]);
+    }
+    const sizes = dots.map((d) => Math.min(d[2] - d[0], d[3] - d[1])).sort((a, b) => a - b);
+    const dotSize = sizes[sizes.length >> 1] || step;
+    const n = Math.max(1, Math.round(dotSize / Math.max(2, step)));  // sub-squares per dot side
+    const sub = dotSize / n;
+    const target = [], start = [], seed = [], kind = [], size = [];
+    for (const [ax, ay, bx, by] of dots) {
+      const cols = Math.max(1, Math.round((bx - ax) / sub)), rows = Math.max(1, Math.round((by - ay) / sub));
+      const sw = (bx - ax) / cols, sh = (by - ay) / rows;
+      for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+        const cx = ax + (i + 0.5) * sw, cy = ay + (j + 0.5) * sh;
+        if (!ink(Math.min(W - 1, Math.floor(cx)), Math.min(H - 1, Math.floor(cy)))) continue;
+        target.push(cx, cy); size.push(Math.max(sw, sh));
         const a = Math.random() * Math.PI * 2, r = (0.35 + Math.random() * 0.65) * Math.max(W, H) * 0.7;
         start.push(W / 2 + Math.cos(a) * r, H * 0.45 + Math.sin(a) * r * 0.6);
         seed.push(Math.random()); kind.push(0);
@@ -139,7 +170,7 @@ export function start(h1) {
     const dust = Math.round(Math.min(110, W * 0.08));
     for (let i = 0; i < dust; i++) {
       target.push(Math.random() * W, Math.random() * H);
-      start.push(0, 0); seed.push(Math.random()); kind.push(Math.random() < 0.12 ? 2 : 1);
+      start.push(0, 0); seed.push(Math.random()); kind.push(Math.random() < 0.12 ? 2 : 1); size.push(step);
     }
 
     const geo = new BufferGeometry();
@@ -148,6 +179,7 @@ export function start(h1) {
     geo.setAttribute('aStart', new BufferAttribute(new Float32Array(start), 2));
     geo.setAttribute('aSeed', new BufferAttribute(new Float32Array(seed), 1));
     geo.setAttribute('aKind', new BufferAttribute(new Float32Array(kind), 1));
+    geo.setAttribute('aSize', new BufferAttribute(new Float32Array(size), 1));
     if (points) { scene.remove(points); points.geometry.dispose(); }
     points = new Points(geo, material);
     points.frustumCulled = false;
@@ -165,7 +197,7 @@ export function start(h1) {
   addEventListener('pointermove', onMove, { passive: true });
   addEventListener('pointerdown', onMove, { passive: true });
 
-  let raf = 0, visible = true, t0 = performance.now(), introDone = false;
+  let raf = 0, visible = true, t0 = performance.now(), introDone = false, lastText = 0;
   function frame(now) {
     raf = requestAnimationFrame(frame);
     const t = (now - t0) / 1000;
@@ -177,6 +209,15 @@ export function start(h1) {
     const want = now - mouse.last < 900 ? 1 : 0;
     uniforms.uPush.value += (want - uniforms.uPush.value) * (want ? 0.15 : 0.04);
     uniforms.uScroll.value = Math.min(1, Math.max(0, scrollY / (hero.offsetHeight * 0.9)));
+    // At rest the real dot-matrix text is shown; particles take over only while something moves
+    // the letters (intro, a pointer near them, scrolling). Both are aligned, so the swap is invisible.
+    const R = uniforms.uRadius.value;
+    const near = mouse.x > nameBox.x0 - R && mouse.x < nameBox.x1 + R && mouse.y > nameBox.y0 - R && mouse.y < nameBox.y1 + R;
+    const busy = !introDone || uniforms.uScroll.value > 0.002 || (near && uniforms.uPush.value > 0.01) || (uniforms.uPush.value > 0.01 && uniforms.uLetters.value > 0.5);
+    const L = uniforms.uLetters.value + ((busy ? 1 : 0) - uniforms.uLetters.value) * (busy ? 0.5 : 0.25);
+    uniforms.uLetters.value = L < 0.01 ? 0 : L > 0.99 ? 1 : L;
+    const textOn = 1 - uniforms.uLetters.value;
+    if (textOn !== lastText) { h1.style.color = textOn ? `rgb(18 18 17 / ${textOn})` : ''; lastText = textOn; }
     renderer.render(scene, camera);
   }
   const run = () => { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame); };
@@ -199,6 +240,6 @@ export function start(h1) {
     removeEventListener('pointermove', onMove); removeEventListener('pointerdown', onMove);
     removeEventListener('resize', onResize); document.removeEventListener('visibilitychange', onVis);
     points?.geometry.dispose(); material.dispose(); renderer.dispose(); canvas.remove();
-    hero.classList.remove('particles-on');
+    hero.classList.remove('particles-on'); h1.style.color = '';
   };
 }
