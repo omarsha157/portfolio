@@ -2,6 +2,7 @@
 // Every word on the site comes from content/; this file only arranges it.
 import fs from 'node:fs';
 import path from 'node:path';
+import crypto from 'node:crypto';
 import matter from 'gray-matter';
 import { marked } from 'marked';
 import { dotArt } from './dot-art.js';
@@ -19,14 +20,29 @@ const todos = [];
 const drafts = [];
 const isTodo = (s) => typeof s === 'string' && /\{\{TODO:/.test(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+const SHOW_TODOS = process.env.SHOW_TODOS === '1';
 const todo = (html) => html.replace(TODO_RE, (_, t) => {
   t = t.trim();
   if (t === 'in progress') return '<span class="pending">In progress</span>';
   todos.push(t);
-  return `<span class="ph" title="Placeholder">${t}</span>`;
+  return SHOW_TODOS ? `<span class="ph" title="Placeholder">${t}</span>` : '';
 });
+// Public build: drop lines that are only a placeholder (or a label left dangling by one),
+// and remove inline placeholders, so visitors never see notes-to-self.
+const OPEN_TODO = /\{\{TODO:(?!\s*in progress\s*\}\})[^}]*\}\}/;
+function scrub(src) {
+  if (SHOW_TODOS) return src;
+  return src.split('\n').flatMap((line) => {
+    if (!OPEN_TODO.test(line)) return [line];
+    for (const m of line.match(new RegExp(OPEN_TODO, 'g'))) todos.push(m.replace(TODO_RE, '$1').trim());
+    const out = line.replace(new RegExp('\\s*' + OPEN_TODO.source, 'g'), '')
+      .replace(/\|\s*,\s*(\w)/g, (_, c) => `| ${c.toUpperCase()}`);
+    const text = out.replace(/^\s*(?:[-*]|\d+\.)\s*/, '').replace(/\*\*[^*]*\*\*\s*—\s*$/, '').trim();
+    return text ? [out] : [];
+  }).join('\n');
+}
 const t = (s) => todo(esc(s));
-const md = (s) => todo(marked.parse(s));
+const md = (s) => todo(marked.parse(scrub(s)));
 const inline = (s) => todo(marked.parseInline(esc(s)));   // *word* = emphasised (ink), rest grey
 const plain = (s) => String(s).replace(TODO_RE, '').replace(/\*/g, '').trim();
 const arrow = '<svg class="arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -36,23 +52,39 @@ const name = plain(site.name);
 const wordmark = name || 'Your Name';
 const initials = (name || 'Y N').split(/\s+/).map((w) => w[0]).join('').slice(0, 2).toUpperCase();
 
-function layout({ route, title, description, body, depth = route.split('/').filter(Boolean).length }) {
+const ORIGIN = `https://${site.domain}`;
+function layout({ route, title, description, body, depth = route.split('/').filter(Boolean).length, noindex = false, jsonld = null }) {
   const up = '../'.repeat(depth + 1); // site/<route>/index.html -> project root
   const nav = site.nav.filter((n) => !n.primary).map((n) => {
     const cur = n.href === route || (n.href !== '/' && route.startsWith(n.href));
     return `<a href="${n.href}"${cur ? ' aria-current="page"' : ''}>${esc(n.label)}</a>`;
   }).join('');
   const cta = site.nav.find((n) => n.primary);
+  const fullTitle = title === 'Home' ? `${wordmark} — ${site.role}` : `${title} — ${wordmark}`;
   return `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="robots" content="noindex">
-<meta name="theme-color" content="#eeece7">
-<title>${esc(title === 'Home' ? `${wordmark} — ${site.role}` : `${title} — ${wordmark}`)}</title>
+${noindex ? '<meta name="robots" content="noindex">\n' : `<link rel="canonical" href="${ORIGIN}${route}">\n`}<meta name="theme-color" content="#eeece7">
+<title>${esc(fullTitle)}</title>
 <meta name="description" content="${esc(plain(description))}">
-<script>document.documentElement.classList.add('js')</script>
+<meta name="author" content="${esc(wordmark)}">
+<link rel="icon" href="/favicon.ico" sizes="32x32">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta property="og:type" content="${route === '/' ? 'profile' : 'website'}">
+<meta property="og:site_name" content="${esc(wordmark)}">
+<meta property="og:title" content="${esc(fullTitle)}">
+<meta property="og:description" content="${esc(plain(description))}">
+<meta property="og:url" content="${ORIGIN}${noindex ? '/' : route}">
+<meta property="og:image" content="${ORIGIN}/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="${esc(`${wordmark} — ${site.role}`)}">
+<meta name="twitter:card" content="summary_large_image">${jsonld ? `\n<script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, '\\u003c')}</script>` : ''}
+<script>${"document.documentElement.classList.add('js')"}</script>
 <link rel="stylesheet" href="${up}src/style.css">
 <script type="module" src="${up}src/main.js"></script>
 </head>
@@ -91,7 +123,9 @@ function footer() {
 </footer>`;
 }
 
+const pages = [];
 function write(route, page, file = path.join(OUT, route, 'index.html')) {
+  if (!page.noindex) pages.push(route);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, layout({ route, ...page }));
 }
@@ -123,6 +157,9 @@ const home = read(C('home.md'));
 if (site.headlineDraft) drafts.push('headline');
 write('/', {
   title: 'Home', description: home.data.description,
+  jsonld: { '@context': 'https://schema.org', '@type': 'Person', name: wordmark, jobTitle: site.role, url: ORIGIN,
+    address: { '@type': 'PostalAddress', addressCountry: plain(site.location) },
+    knowsAbout: site.skills['Professional stack'], sameAs: site.links.filter((l) => !isTodo(l.url)).map((l) => l.url) },
   body: `<section class="hero wrap">
   <p class="kicker in d1">${t(site.role)} · ${t(site.location)}</p>
   <h1 class="dot-hero in d1">${esc(wordmark)}</h1>
@@ -248,7 +285,35 @@ const ERRORS = [
   ['503', 'Temporarily unavailable', 'The site is down for a moment, likely maintenance. Please try again shortly.'],
 ];
 for (const [code, title, msg] of ERRORS) {
-  write(`/${code}`, { title, description: `${title}.`, depth: 0, body: `<section class="page-head wrap"><p class="kicker">Error ${code}</p><h1 class="dot-title">${code}</h1><p class="lede">${esc(msg)}</p><p class="hero-ctas">${btn('/', 'Back home')}<a class="btn-text" href="/contact/">Get in touch</a></p></section>` }, path.join(OUT, `${code}.html`));
+  write(`/${code}`, { title, description: `${title}.`, depth: 0, noindex: true, body: `<section class="page-head wrap"><p class="kicker">Error ${code}</p><h1 class="dot-title">${code}</h1><p class="lede">${esc(msg)}</p><p class="hero-ctas">${btn('/', 'Back home')}<a class="btn-text" href="/contact/">Get in touch</a></p></section>` }, path.join(OUT, `${code}.html`));
 }
+
+// ---------- static files (Vite copies site/public/ to the root of dist/) ----------
+const PUB = path.join(OUT, 'public');
+fs.cpSync(path.join(ROOT, 'public'), PUB, { recursive: true });
+const today = new Date().toISOString().slice(0, 10);
+fs.writeFileSync(path.join(PUB, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${pages.map((r) => `  <url><loc>${ORIGIN}${r}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
+</urlset>
+`);
+fs.writeFileSync(path.join(PUB, 'robots.txt'), `User-agent: *\nAllow: /\n\nSitemap: ${ORIGIN}/sitemap.xml\n`);
+fs.writeFileSync(path.join(PUB, 'site.webmanifest'), JSON.stringify({
+  name: `${wordmark} — ${site.role}`, short_name: wordmark, start_url: '/', display: 'minimal-ui',
+  background_color: '#eeece7', theme_color: '#eeece7',
+  icons: [{ src: '/icon-192.png', sizes: '192x192', type: 'image/png' }, { src: '/icon-512.png', sizes: '512x512', type: 'image/png' }],
+}, null, 2));
+// Security headers for Cloudflare (served from dist/_headers). The one inline script is allowed by hash.
+const inlineJs = "document.documentElement.classList.add('js')";
+const jsHash = crypto.createHash('sha256').update(inlineJs).digest('base64');
+fs.writeFileSync(path.join(PUB, '_headers'), `/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'sha256-${jsHash}' https://challenges.cloudflare.com https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:; connect-src 'self' https://cloudflareinsights.com; frame-src https://challenges.cloudflare.com; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=()
+  Strict-Transport-Security: max-age=31536000
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+`);
 
 console.log(`content: ${todos.length} placeholders, drafts to review: ${drafts.join(', ') || 'none'}`);

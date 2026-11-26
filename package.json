@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "node scripts/build-content.js && vite",
     "build": "node scripts/build-content.js && vite build",
-    "deploy": "npm run build && docker compose up -d"
+    "deploy": "SHOW_TODOS=1 npm run build && docker compose up -d"
   },
   "devDependencies": {
     "gray-matter": "^4.0.3",

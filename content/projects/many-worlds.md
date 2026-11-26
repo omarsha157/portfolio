@@ -22,7 +22,6 @@ Architecture, the config format and the rules that keep scene code and feature c
 - **A world is a config file.** It lists the models, the camera positions and the hotspots that tie an object to a feature — the steering wheel, the desk drawer, the town hall.
 - **Features don't know which world they're in.** Changing the world means writing a new config and adding models, not touching feature code.
 - **2D comes from the same config.** Every hotspot also becomes an ordinary page section and link, so the 2D version is generated, not maintained by hand. It is used automatically when 3D can't run well.
-- The home page of this site is built the same way.
 
 ## Measured result
 

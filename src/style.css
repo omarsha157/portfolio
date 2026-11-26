@@ -7,7 +7,7 @@
   --card: #f8f7f4;
   --white: #ffffff;
   --ink: #121211;
-  --grey: #8c8982;
+  --grey: #6b6862;
   --line: #d8d5ce;
   --wire: #c9c6be;
   --accent: #e4572e;
@@ -179,7 +179,7 @@ a:hover .arrow { transform: translateX(3px); }
 .form-status { margin: 0; font-size: 14.5px; }
 .form-status:empty { display: none; }
 .form-status.ok { color: var(--ink); }
-.form-status.err { color: var(--accent); }
+.form-status.err { color: #b23c18; }
 .elsewhere { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
 .elsewhere li { border-bottom: 1px solid var(--line); }
 .elsewhere a { display: flex; align-items: center; gap: 12px; padding: 14px 0; text-decoration: none; }
