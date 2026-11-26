@@ -100,27 +100,28 @@ ${noindex ? '<meta name="robots" content="noindex">\n' : `<link rel="canonical" 
 <main id="main" tabindex="-1">
 ${body}
 </main>
-${footer()}
+${footer(route)}
 </body>
 </html>
 `;
 }
 
 // Footer: the dot-matrix sign-off, then a panel of links styled like the top bar, at its width.
-function footer() {
+function footer(route) {
+  const onContact = route.startsWith('/contact/');
   const ok = (l) => !isTodo(l.url);
-  const col = (h, items) => `<div class="foot-col"><p class="col-h">${esc(h)}</p><ul>${items.join('')}</ul></div>`;
+  const col = (h, items, cls = '') => `<div class="foot-col${cls}"><p class="col-h">${esc(h)}</p><ul>${items.join('')}</ul></div>`;
   const li = (href, label, ext) => `<li><a href="${esc(href)}"${ext ? ' rel="me noopener"' : ''}>${esc(label)}</a></li>`;
-  const pages = col('Pages', site.nav.map((n) => li(n.href, n.label)));
-  const work = col('Projects', projects.map((p) => li(p.href, p.title)));
+  const pages = col('Pages', site.nav.map((n) => li(n.href, n.label)), ' wide-only'); // phones: the top nav has these
+  const work = col('Projects', projects.map((p) => li(p.href, p.title)), ' wide-only');
   const elsewhere = col('Elsewhere', [
     ...(isTodo(site.email) ? [] : [li(`mailto:${site.email}`, 'Email')]),
     ...site.links.filter(ok).map((l) => li(l.url, l.label, true)),
   ]);
-  return `<footer class="foot">
-  <div class="wrap">
+  return `<footer class="foot${onContact ? ' foot-plain' : ''}">
+  ${onContact ? '' : `<div class="wrap">
     <p class="dot-xl"><a href="/contact/">Let’s talk.</a></p>
-  </div>
+  </div>`}
   <div class="foot-shell">
     <div class="foot-bar">
       <div class="panel-top">
@@ -129,7 +130,7 @@ function footer() {
       </div>
       <div class="panel-body">
         <nav class="foot-cols" aria-label="Footer">${pages}${work}${elsewhere}</nav>
-        <a class="pill" href="/contact/">Send me a message <span aria-hidden="true">→</span></a>
+        ${onContact ? '' : '<a class="pill" href="/contact/">Send me a message <span aria-hidden="true">→</span></a>'}
       </div>
       <div class="panel-bottom">
         <p>${t(site.footer)}</p>
@@ -183,13 +184,6 @@ write('/', {
   <p class="hero-line in d3">${inline(site.headline)}</p>
   <p class="hero-ctas in d3">${btn('/work/', 'See the work')}<a class="btn-text" href="/contact/">Get in touch</a></p>
 </section>
-<section class="strip wrap" aria-label="At a glance">
-  <div class="strip-in">
-    <div class="cell"><p class="cap-label">Stack</p><ul class="stack-list"><li>ANGULAR</li><li>NODE.JS</li><li>POSTGRESQL</li><li class="more">+ AND MORE</li></ul></div>
-    <div class="cell"><p class="cap-label">Based in</p><p class="dot-md">INDIA</p></div>
-    <div class="cell cell-text"><p class="cap-label">How I work</p><p>${inline(site.aiStatement)}</p>${btn('/about/', 'More about me', 'light')}</div>
-  </div>
-</section>
 <div class="wrap features">${projects.map(feature).join('')}</div>`,
 });
 
@@ -199,7 +193,7 @@ write('/work/', {
   body: `<section class="page-head wrap">
   <p class="kicker in d1">Work</p>
   <h1 class="dot-title in d1">Projects</h1>
-  <p class="lede in d2">${inline(site.aiStatement)}</p>
+  <p class="lede in d2">${inline(site.workIntro)}</p>
 </section>
 <div class="wrap features">${projects.map(feature).join('')}</div>`,
 });
@@ -210,13 +204,9 @@ for (const p of projects) {
   <header class="page-head wrap project-head">
     <div>
       <a class="back in d1" href="/work/">← All work</a>
+      <p class="kicker in d1">${esc(p.status)}</p>
       <h1 class="title in d1">${esc(p.title)} <span class="grey">${esc(p.tagline || '')}</span></h1>
       <p class="lede in d2">${t(p.summary)}</p>
-      <dl class="meta in d3">
-        <div><dt>Status</dt><dd>${esc(p.status)}</dd></div>
-        <div><dt>My role</dt><dd>Architecture, decisions, testing, operation</dd></div>
-        <div><dt>Approach</dt><dd>AI-assisted development</dd></div>
-      </dl>
     </div>
     <div class="project-art in d2" data-art="${ART[p.slug]?.[0] || ''}" data-seed="${ART[p.slug]?.[1] || 3}">${art(p)}</div>
   </header>
@@ -235,7 +225,6 @@ write('/about/', {
   body: `<section class="page-head wrap">
   <p class="kicker in d1">About</p>
   <h1 class="dot-title in d1">About</h1>
-  <p class="lede in d2">${inline(site.headline)}</p>
 </section>
 <div class="prose wrap">${md(about.content).replace('<!-- skills -->', skills)}</div>`,
 });

@@ -33,7 +33,7 @@ function decode(el) {
 export function start() {
   // Headings and dot-matrix labels (the hero name has its own particle entrance).
   const decodeTargets = [
-    ...document.querySelectorAll('.dot-title, .dot-num, .stack-list li, .cell .dot-md'),
+    ...document.querySelectorAll('.dot-title, .dot-num'),
     ...document.querySelectorAll('.dot-xl a'),
   ];
   for (const el of decodeTargets) {
@@ -54,8 +54,8 @@ export function start() {
       onEnter: () => gsap.to(kids, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.09, clearProps: 'transform' }),
     });
   }
-  // Below-the-fold blocks without .reveal (strip cells, long-form sections, contact columns).
-  const extra = document.querySelectorAll('.strip .cell, .prose > h2, .prose > p, .prose > ul, .prose > ol, .prose > table, .contact-grid > *');
+  // Below-the-fold blocks without .reveal (long-form sections, contact columns).
+  const extra = document.querySelectorAll('.prose > h2, .prose > p, .prose > ul, .prose > ol, .prose > table, .contact-grid > *');
   const fold = innerHeight;
   const later = [...extra].filter((el) => el.getBoundingClientRect().top > fold);
   gsap.set(later, { opacity: 0, y: 24 });
