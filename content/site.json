@@ -1,0 +1,64 @@
+{
+  "name": "Omar Sha",
+  "role": "Full-stack web developer",
+  "location": "India",
+  "headline": "I build web systems that *fix themselves* and *change shape* for each client.",
+  "headlineDraft": true,
+  "intro": "Professionally I work in Angular, Node.js and PostgreSQL. In my own time I build harder things: an app that writes its own bug fixes, and an interface that can become a car cockpit, an office or a small town. I own them end to end and use AI tools to work faster.",
+  "email": "omarsha157@gmail.com",
+  "links": [
+    {
+      "label": "GitHub",
+      "url": "https://github.com/omarsha157"
+    },
+    {
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/omarsha157"
+    },
+    {
+      "label": "Hashnode",
+      "url": "https://hashnode.com/@omarsha"
+    }
+  ],
+  "photo": "{{TODO: photo, or remove this line for no photo}}",
+  "domain": "{{TODO: domain}}",
+  "skills": {
+    "Professional stack": [
+      "Angular",
+      "Node.js",
+      "PostgreSQL",
+      "TypeScript",
+      "JavaScript",
+      "HTML",
+      "CSS"
+    ],
+    "I also run": [
+      "Ubuntu Server",
+      "Proxmox",
+      "Docker",
+      "Cloudflare Tunnel",
+      "nginx"
+    ]
+  },
+  "aiStatement": "I own my projects end to end — *the architecture, the technical decisions, the testing and running them in production* — and use AI tools to ship faster.",
+  "nav": [
+    {
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "label": "Work",
+      "href": "/work/"
+    },
+    {
+      "label": "About",
+      "href": "/about/"
+    },
+    {
+      "label": "Contact",
+      "href": "/contact/",
+      "primary": true
+    }
+  ],
+  "footer": "© 2026 Omar Sha"
+}
