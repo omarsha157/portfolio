@@ -187,6 +187,23 @@ write('/about/', {
 });
 
 // Contact
+// The form posts to the Worker at /api/contact (worker/index.js). It stays switched off
+// until a Turnstile site key is set in site.json, so it never looks live when it isn't.
+function contactForm() {
+  const key = site.turnstileSiteKey;
+  const off = key ? '' : ' disabled';
+  return `<form class="card contact-form" action="/api/contact" method="post" novalidate aria-describedby="form-note">
+    <h2 class="h-md">Send a message</h2>
+    <p id="form-note" class="note">${key ? 'I usually reply within a couple of days.' : 'The form isn’t switched on yet. Please use email for now.'}</p>
+    <label>Name <input name="name" autocomplete="name" maxlength="100" required${off}></label>
+    <label>Email <input name="email" type="email" autocomplete="email" maxlength="200" required${off}></label>
+    <label>Message <textarea name="message" rows="5" maxlength="5000" required${off}></textarea></label>
+    <label class="hp" aria-hidden="true">Company <input name="company" tabindex="-1" autocomplete="off"></label>
+    ${key ? `<div class="cf-turnstile" data-sitekey="${esc(key)}" data-theme="light" data-size="flexible"></div>` : ''}
+    <button class="btn" type="submit"${off}><span class="btn-icon" aria-hidden="true">${arrow}</span>Send</button>
+    <p class="form-status" role="status" aria-live="polite"></p>
+  </form>${key ? '\n<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}`;
+}
 const contact = read(C('contact.md'));
 const email = isTodo(site.email) ? t(site.email) : `<a href="mailto:${esc(site.email)}">${esc(site.email)}</a>`;
 write('/contact/', {
@@ -198,14 +215,7 @@ write('/contact/', {
   <p class="contact-email in d2">${email}</p>
 </section>
 <section class="wrap contact-grid">
-  <form class="card contact-form" aria-describedby="form-note">
-    <h2 class="h-md">Send a message</h2>
-    <p id="form-note" class="note">The form starts sending once the site is live on its domain. Until then, please use email.</p>
-    <label>Name <input name="name" autocomplete="name" disabled></label>
-    <label>Email <input name="email" type="email" autocomplete="email" disabled></label>
-    <label>Message <textarea name="message" rows="5" disabled></textarea></label>
-    <button class="btn" type="submit" disabled><span class="btn-icon" aria-hidden="true">${arrow}</span>Send</button>
-  </form>
+  ${contactForm()}
   <div>
     <h2 class="h-md">Elsewhere</h2>
     <ul class="elsewhere">${site.links.map((l) => `<li>${isTodo(l.url) ? `${esc(l.label)} <span class="ph">${esc(l.url.replace(TODO_RE, '$1'))}</span>` : `<a href="${esc(l.url)}" rel="me noopener">${esc(l.label)} ${arrow}</a>`}</li>`).join('')}</ul>

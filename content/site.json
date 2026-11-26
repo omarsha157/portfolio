@@ -21,7 +21,8 @@
     }
   ],
   "photo": "{{TODO: photo, or remove this line for no photo}}",
-  "domain": "{{TODO: domain}}",
+  "domain": "omarsha.com",
+  "turnstileSiteKey": "",
   "skills": {
     "Professional stack": [
       "Angular",

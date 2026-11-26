@@ -162,6 +162,12 @@ a:hover .arrow { transform: translateX(3px); }
 .contact-form input, .contact-form textarea { background: var(--white); border: 1px solid var(--line); color: var(--ink); border-radius: 10px; padding: 12px 14px; font: inherit; }
 .contact-form button { justify-self: start; }
 .note { color: var(--grey); font-size: 14.5px; margin: 0; }
+.contact-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+.contact-form { position: relative; }
+.cf-turnstile { min-height: 65px; }
+.form-status { margin: 0; font-size: 14.5px; min-height: 1.4em; }
+.form-status.ok { color: var(--ink); }
+.form-status.err { color: var(--accent); }
 .elsewhere { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
 .elsewhere li { padding: 16px 0; border-bottom: 1px solid var(--line); }
 .elsewhere a { display: flex; justify-content: space-between; text-decoration: none; }

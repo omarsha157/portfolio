@@ -1,9 +1,16 @@
-// Cloudflare Workers static-assets deploy: serves the Vite build in dist/.
+// Cloudflare Workers deploy: static pages from dist/, plus the contact-form endpoint.
 {
   "name": "portfolio",
+  "main": "worker/index.js",
   "compatibility_date": "2025-06-01",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
-  }
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  // Email Routing must be on for omarsha.com and this address verified as a destination.
+  "send_email": [{ "name": "EMAIL", "destination_address": "omarsha157@gmail.com" }],
+  "vars": { "CONTACT_TO": "omarsha157@gmail.com" }
+  // Secret (set in the dashboard, never in this file): TURNSTILE_SECRET
 }

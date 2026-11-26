@@ -9,3 +9,26 @@ if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: 
   }, { rootMargin: '0px 0px -8% 0px' });
   els.forEach((el) => io.observe(el));
 }
+
+// Contact form: send without leaving the page. Without JS the Turnstile check can't run,
+// so the email address above the form is the fallback.
+const form = document.querySelector('.contact-form[action]');
+if (form) {
+  const status = form.querySelector('.form-status');
+  const button = form.querySelector('button[type=submit]');
+  const say = (msg, kind) => { status.textContent = msg; status.className = `form-status ${kind}`; };
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!form.checkValidity()) { say('Please fill in your name, a valid email and a message.', 'err'); return; }
+    button.disabled = true;
+    say('Sending…', '');
+    try {
+      const res = await fetch(form.action, { method: 'POST', body: new FormData(form) });
+      const out = await res.json().catch(() => ({}));
+      if (res.ok && out.ok) { form.reset(); say('Thanks — your message is on its way. I’ll reply by email.', 'ok'); }
+      else say(out.error || 'Something went wrong. Please email me directly.', 'err');
+    } catch { say('Couldn’t reach the server. Please check your connection or email me directly.', 'err'); }
+    window.turnstile?.reset();
+    button.disabled = false;
+  });
+}
