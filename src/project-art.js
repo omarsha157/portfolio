@@ -8,6 +8,7 @@ import {
   InstancedBufferAttribute, Mesh, ShaderMaterial, Color,
 } from 'three';
 import { dotCells } from '../scripts/dot-art.js';
+import { seen, mark } from './once.js';
 
 const COLS = 46, ROWS = 40, VW = COLS * 10, VH = ROWS * 10;
 const PAD = 1.35;   // the canvas is larger than the SVG so turned blocks aren't clipped
@@ -118,10 +119,13 @@ export function mount(box, kind, seed) {
   };
   addEventListener('pointermove', onMove, { passive: true });
 
-  let raf = 0, visible = false, shown = false, introStart = 0;
+  // The fly-in plays once per visit for each illustration; after that it is already assembled.
+  const introKey = `intro:art:${kind}`;
+  let raf = 0, visible = false, shown = false, introStart = seen(introKey) ? -1 : 0;
+  if (introStart) uniforms.uIntro.value = 1;
   function frame(now) {
     raf = requestAnimationFrame(frame);
-    if (introStart) uniforms.uIntro.value = Math.min(1, (now - introStart) / 2200);
+    if (introStart > 0) uniforms.uIntro.value = Math.min(1, (now - introStart) / 2200);
     const b = box.getBoundingClientRect();
     // -1 = entering at the bottom, 0 = centred, +1 = leaving at the top.
     const pos = Math.max(-1, Math.min(1, ((innerHeight / 2) - (b.top + b.height / 2)) / (innerHeight / 2 + b.height / 2)));
@@ -139,7 +143,7 @@ export function mount(box, kind, seed) {
   // Draw while on screen; the fly-in starts once a third of the art is visible.
   const io = new IntersectionObserver(([e]) => {
     visible = e.isIntersecting;
-    if (!introStart && e.intersectionRatio >= 0.35) introStart = performance.now();
+    if (!introStart && e.intersectionRatio >= 0.35) { introStart = performance.now(); mark(introKey); }
     visible ? run() : stop();
   }, { threshold: [0, 0.35] });
   io.observe(box);
