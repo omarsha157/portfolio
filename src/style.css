@@ -308,3 +308,9 @@ main:focus { outline: none; }
 
 /* The hero name is a graphic you play with, not text to select. */
 .dot-hero { cursor: default; -webkit-user-select: none; user-select: none; }
+
+/* Interface parts aren't selectable; readable content (paragraphs, project text, the email
+   address, form fields, project titles) stays selectable for copying and translating. */
+.top, .btn, .btn-text, .nav-cta, .pill, .to-top, .copy, .back,
+.dot-title, .dot-xl, .dot-num, .dot-md, .stack-list, .kicker, .cap-label, .meta dt, .col-h,
+.foot-cols, .panel-top, .panel-bottom, .elsewhere, [data-art] { -webkit-user-select: none; user-select: none; }
