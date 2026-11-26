@@ -4,8 +4,8 @@ slug: many-worlds
 order: 2
 status: In progress
 tagline: "One set of features, many interfaces."
-summary: "The same feature modules shown as a car cockpit, an office cubicle or a small town — chosen by a scene config file, with an automatic 2D version for every world."
-description: "An in-progress interface system where one set of features is delivered as different 3D worlds from a config file, with an automatic 2D fallback."
+summary: "An experiment in presenting the same feature modules as different 3D scenes, such as a car cockpit, an office or a small town, chosen by a config file, with a plain 2D version generated from the same config."
+description: "An in-progress experiment: one set of features presented as different 3D scenes from a config file, with a generated 2D version."
 draft: true
 ---
 

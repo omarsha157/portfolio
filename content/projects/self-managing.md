@@ -3,9 +3,9 @@ title: Self-managing app
 slug: self-managing
 order: 1
 status: In progress
-tagline: "Errors in, tested fixes out."
-summary: "When the app throws an error, an AI writes a test that reproduces it, proposes a fix as a pull request, and the change goes through CI and a preview before it can ship — with a replay-based rollback if it goes wrong."
-description: "An in-progress web app that turns its own runtime errors into tested, reviewable fix pull requests, with honest results as they come in."
+tagline: "From a runtime error to a fix proposal you can review."
+summary: "An experiment in automating bug fixing safely. When the app logs an error, an AI tool tries to reproduce it with a failing test and proposes a fix as a pull request. Nothing ships without passing CI and a preview deployment."
+description: "An in-progress experiment: turning a web app's runtime errors into tested fix pull requests that can be reviewed, with results published as they come in."
 draft: true
 ---
 

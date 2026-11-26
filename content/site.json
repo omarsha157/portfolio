@@ -2,9 +2,9 @@
   "name": "Omar Sha",
   "role": "Full-stack web developer",
   "location": "India",
-  "headline": "I build web systems that *fix themselves* and *change shape* for each client.",
+  "headline": "I build and run full-stack web apps: *Angular* front ends, *Node.js* services and *PostgreSQL* databases.",
   "headlineDraft": true,
-  "intro": "Professionally I work in Angular, Node.js and PostgreSQL. In my own time I build harder things: an app that writes its own bug fixes, and an interface that can become a car cockpit, an office or a small town. I own them end to end and use AI tools to work faster.",
+  "intro": "Professionally I work in Angular, Node.js and PostgreSQL. In my own time I am working on two experiments: a pipeline that drafts bug fixes as pull requests for review, and a way to present the same features as different 3D scenes. I own them end to end and use AI tools to work faster.",
   "email": "omarsha157@gmail.com",
   "links": [
     {
@@ -41,7 +41,7 @@
       "nginx"
     ]
   },
-  "aiStatement": "I own my projects end to end — *the architecture, the technical decisions, the testing and running them in production* — and use AI tools to ship faster.",
+  "aiStatement": "I own my projects end to end — *the architecture, the technical decisions, the testing and the deployment* — and use AI tools to ship faster.",
   "nav": [
     {
       "label": "Home",

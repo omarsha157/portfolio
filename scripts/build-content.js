@@ -178,7 +178,7 @@ write('/', {
 
 // Work index + project pages
 write('/work/', {
-  title: 'Work', description: 'Projects: a self-managing app and one app shown as many 3D worlds.',
+  title: 'Work', description: 'Two in-progress projects: an automated bug-fix pipeline and configurable 3D interfaces.',
   body: `<section class="page-head wrap">
   <p class="kicker in d1">Work</p>
   <h1 class="dot-title in d1">Projects</h1>
