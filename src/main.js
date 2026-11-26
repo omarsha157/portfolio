@@ -83,3 +83,35 @@ for (const b of document.querySelectorAll('[data-copy]')) {
     setTimeout(() => { b.textContent = 'Copy address'; }, 2000);
   });
 }
+
+// Desktop pointer touches: magnetic buttons and the orange square over the project art.
+if (matchMedia('(hover: hover) and (pointer: fine)').matches && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const magnets = [...document.querySelectorAll('.btn, .nav-cta')].filter((b) => !b.disabled);
+  const arts = [...document.querySelectorAll('[data-art]')];
+  const dot = arts.length ? Object.assign(document.createElement('div'), { className: 'art-cursor' }) : null;
+  if (dot) { dot.setAttribute('aria-hidden', 'true'); document.body.append(dot); }
+  let px = 0, py = 0, queued = false;
+  addEventListener('pointermove', (e) => {
+    px = e.clientX; py = e.clientY;
+    if (!queued) { queued = true; requestAnimationFrame(update); }
+  }, { passive: true });
+  function update() {
+    queued = false;
+    for (const b of magnets) {
+      const r = b.getBoundingClientRect();
+      const dx = px - (r.left + r.width / 2), dy = py - (r.top + r.height / 2);
+      const reach = Math.max(r.width, r.height) / 2 + 40;
+      const near = Math.abs(dx) < reach && Math.abs(dy) < reach;
+      const clamp = (v) => Math.max(-6, Math.min(6, v)).toFixed(1);   // a gentle lean, never onto a neighbour
+      b.style.setProperty('--mx', near ? `${clamp(dx * 0.12)}px` : '0px');
+      b.style.setProperty('--my', near ? `${clamp(dy * 0.2)}px` : '0px');
+    }
+    if (dot) {
+      const over = arts.some((a) => { const r = a.getBoundingClientRect(); return px > r.left && px < r.right && py > r.top && py < r.bottom; });
+      dot.classList.toggle('on', over);
+      if (over) dot.style.transform = `translate(${px + 14}px, ${py + 14}px)`;
+    }
+  }
+  // Scrolling moves things under a still pointer; recheck without ever touching the scroll.
+  addEventListener('scroll', () => { if (!queued) { queued = true; requestAnimationFrame(update); } }, { passive: true });
+}
