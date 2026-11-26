@@ -149,7 +149,7 @@ const feature = (p, i) => `<section class="feature${i % 2 ? ' flip' : ''}" aria-
     <p class="feature-sum">${t(p.summary)}</p>
     ${btn(p.href, 'Read more', 'light')}
   </div>
-  <div class="feature-art reveal" data-art="${ART[p.slug]?.[0] || ''}">${art(p)}</div>
+  <div class="feature-art reveal" data-art="${ART[p.slug]?.[0] || ''}" data-seed="${ART[p.slug]?.[1] || 3}">${art(p)}</div>
 </section>`;
 
 // Home
@@ -201,7 +201,7 @@ for (const p of projects) {
         <div><dt>Approach</dt><dd>AI-assisted development</dd></div>
       </dl>
     </div>
-    <div class="project-art in d2" data-art="${ART[p.slug]?.[0] || ''}">${art(p)}</div>
+    <div class="project-art in d2" data-art="${ART[p.slug]?.[0] || ''}" data-seed="${ART[p.slug]?.[1] || 3}">${art(p)}</div>
   </header>
   <div class="prose wrap">${md(p.body)}</div>
 </article>`,

@@ -1,50 +1,47 @@
-// 3D project art: the flat dot illustrations rebuilt as objects made of small square blocks.
-// Each one turns with scroll (plus a slow idle spin) and tilts towards the pointer.
-// The SVG stays in the page as the fallback and is hidden only once the 3D version has drawn.
+// 3D project art: the flat dot illustration, turned into blocks.
+// Every square of the SVG becomes a cube of the same size, in the same place and colour, seen
+// face-on through an orthographic camera, so when the project is centred on screen the 3D
+// version looks exactly like the original. Scrolling away turns it and spreads the blocks in
+// depth; the pointer tilts it. The SVG stays in the page as the fallback.
 import {
-  WebGLRenderer, Scene, PerspectiveCamera, BoxGeometry, InstancedMesh, MeshLambertMaterial,
-  HemisphereLight, DirectionalLight, Object3D, Color, Group,
+  WebGLRenderer, Scene, OrthographicCamera, BoxGeometry, InstancedBufferGeometry,
+  InstancedBufferAttribute, Mesh, ShaderMaterial, Color,
 } from 'three';
-import { shapes } from '../scripts/dot-art.js';
+import { dotCells } from '../scripts/dot-art.js';
 
-const INK = '#4a4843', ACCENT = '#e4572e';
+const COLS = 46, ROWS = 40, VW = COLS * 10, VH = ROWS * 10;
+const PAD = 1.35;   // the canvas is larger than the SVG so turned blocks aren't clipped
 
-// Each builder returns block positions [x, y, z, size, accent?] in roughly a -1..1 box.
-const builders = {
-  // The gear from the 2D art, extruded: thick teeth and rim, a thin hub ring.
-  gear() {
-    const out = [], N = 40;
-    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-      const x = (i + 0.5) / N, y = (j + 0.5) / N;
-      const d = shapes.gear(x, 0.5 + (y - 0.5) / 1.15);
-      if (d < 0.5) continue;
-      const depth = d > 0.92 ? 3 : 2;
-      for (let k = 0; k < depth; k++) {
-        out.push([(x - 0.5) * 2, (0.5 - y) * 2, (k - (depth - 1) / 2) * (2 / N), 2 / N, Math.random() < 0.015]);
-      }
-    }
-    return out;
-  },
-  // A cube shell whose three pairs of faces use three block sizes: one object, many faces.
-  cube() {
-    const out = [], N = 9, s = 2 / N;
-    const faceSize = { y: 1, x: 0.62, z: 0.32 };
-    const seen = new Set();
-    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) for (let k = 0; k < N; k++) {
-      const onX = i === 0 || i === N - 1, onY = j === 0 || j === N - 1, onZ = k === 0 || k === N - 1;
-      if (!onX && !onY && !onZ) continue;
-      const key = `${i},${j},${k}`; if (seen.has(key)) continue; seen.add(key);
-      const size = Math.max(onY ? faceSize.y : 0, onX ? faceSize.x : 0, onZ ? faceSize.z : 0);
-      out.push([(i - (N - 1) / 2) * s, (j - (N - 1) / 2) * s, (k - (N - 1) / 2) * s, s * size, Math.random() < 0.02]);
-    }
-    return out;
-  },
-};
+const vert = /* glsl */ `
+attribute vec3 aOffset;     // square centre (x, y) in viewBox units, centred on 0
+attribute float aSize;
+attribute float aSeed;
+uniform float uSpread;
+varying vec3 vNormal;
+void main() {
+  vec3 p = position * aSize + aOffset;
+  p.z += (aSeed - 0.5) * uSpread;
+  vNormal = normalize(normalMatrix * normal);
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+}`;
 
-export function mount(box, kind) {
-  const make = builders[kind];
-  if (!make) return null;
+const frag = /* glsl */ `
+precision mediump float;
+uniform vec3 uFront, uSide;
+varying vec3 vNormal;
+void main() {
+  vec3 n = normalize(vNormal);
+  // Faces towards the viewer keep the illustration's exact colour; side faces are lighter
+  // so the depth reads as the blocks turn.
+  float side = 1.0 - smoothstep(0.55, 0.9, abs(n.z));
+  vec3 sideCol = mix(uSide, vec3(1.0), clamp(n.y * 0.35 + 0.1, 0.0, 0.4));
+  gl_FragColor = vec4(mix(uFront, sideCol, side), 1.0);
+  #include <colorspace_fragment>
+}`;
+
+export function mount(box, kind, seed) {
   const svg = box.querySelector('svg');
+  if (!svg) return null;
   const canvas = document.createElement('canvas');
   canvas.className = 'art-canvas';
   canvas.setAttribute('aria-hidden', 'true');
@@ -57,56 +54,74 @@ export function mount(box, kind) {
   renderer.setClearColor(0x000000, 0);
 
   const scene = new Scene();
-  const camera = new PerspectiveCamera(28, 1, 0.1, 50);
-  camera.position.set(0, 0, 6.2);
-  scene.add(new HemisphereLight(0xffffff, 0x3a3935, 3.2));
-  const sun = new DirectionalLight(0xffffff, 3.4); sun.position.set(-2, 3, 4); scene.add(sun);
+  const camera = new OrthographicCamera((-VW / 2) * PAD, (VW / 2) * PAD, (VH / 2) * PAD, (-VH / 2) * PAD, -2000, 2000);
+  camera.position.z = 1000;
 
-  const blocks = make();
-  const geo = new BoxGeometry(1, 1, 1);
-  const mat = new MeshLambertMaterial({ color: 0xffffff });
-  const mesh = new InstancedMesh(geo, mat, blocks.length);
-  const o = new Object3D(), ink = new Color(INK), accent = new Color(ACCENT);
-  blocks.forEach(([x, y, z, s, a], i) => {
-    o.position.set(x, y, z); o.scale.setScalar(s * 0.78); o.updateMatrix();
-    mesh.setMatrixAt(i, o.matrix); mesh.setColorAt(i, a ? accent : ink);
+  // Same squares as the SVG (same function, same seed).
+  const cells = dotCells(kind, { cols: COLS, rows: ROWS, seed });
+  const n = cells.length;
+  const offset = new Float32Array(n * 3), size = new Float32Array(n), seeds = new Float32Array(n);
+  let r = (seed * 7919) % 233280;
+  const rand = () => ((r = (r * 9301 + 49297) % 233280) / 233280);
+  cells.forEach(([x, y, s], i) => {
+    offset.set([x + s / 2 - VW / 2, VH / 2 - (y + s / 2), 0], i * 3);
+    size[i] = s; seeds[i] = rand();
   });
-  const group = new Group(); group.add(mesh); scene.add(group);
-  // Fit: scale so the object's furthest block (in any rotation) fills ~80% of the frame height.
-  const reach = Math.max(...blocks.map(([x, y, z]) => Math.hypot(x, y, z)));
-  group.scale.setScalar(1.25 / reach);
-  const base = kind === 'cube' ? { x: 0.52, y: -0.62 } : { x: -0.42, y: 0.38 };
+  const geo = new InstancedBufferGeometry().copy(new BoxGeometry(1, 1, 1));
+  geo.instanceCount = n;
+  geo.setAttribute('aOffset', new InstancedBufferAttribute(offset, 3));
+  geo.setAttribute('aSize', new InstancedBufferAttribute(size, 1));
+  geo.setAttribute('aSeed', new InstancedBufferAttribute(seeds, 1));
 
-  // Cover exactly the area of the SVG it replaces, so the layout never moves.
-  function size() {
+  // Front colour = the SVG's ink at 82% over the page background, as a solid colour.
+  const css = getComputedStyle(document.documentElement);
+  // Mixed in sRGB, the way the browser blends the SVG's 82% opacity over the page.
+  const srgb = (v) => { const c = new Color(v); c.convertLinearToSRGB(); return c; };
+  const ink = srgb(css.getPropertyValue('--ink').trim() || '#121211');
+  const bg = srgb(css.getPropertyValue('--bg').trim() || '#eeece7');
+  const mixed = (t) => bg.clone().lerp(ink, t).convertSRGBToLinear();
+  const uniforms = {
+    uSpread: { value: 0 },
+    uFront: { value: mixed(0.82) },
+    uSide: { value: mixed(0.45) },
+  };
+  const mat = new ShaderMaterial({ vertexShader: vert, fragmentShader: frag, uniforms });
+  const mesh = new Mesh(geo, mat);
+  mesh.frustumCulled = false;
+  scene.add(mesh);
+
+  // The canvas is centred on the SVG and PAD times its size; the camera frames the same area.
+  function fit() {
     const bb = box.getBoundingClientRect(), sb = svg.getBoundingClientRect();
-    const w = Math.max(1, sb.width), h = Math.max(1, sb.height);
+    const w = Math.max(1, sb.width * PAD), h = Math.max(1, sb.height * PAD);
     renderer.setSize(w, h, false);
-    Object.assign(canvas.style, { width: `${w}px`, height: `${h}px`, left: `${sb.left - bb.left}px`, top: `${sb.top - bb.top}px` });
-    camera.aspect = w / h; camera.updateProjectionMatrix();
+    Object.assign(canvas.style, {
+      width: `${w}px`, height: `${h}px`,
+      left: `${sb.left - bb.left - (w - sb.width) / 2}px`, top: `${sb.top - bb.top - (h - sb.height) / 2}px`,
+    });
   }
 
   const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
   const onMove = (e) => {
-    const r = canvas.getBoundingClientRect();
-    pointer.tx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (r.width / 2 || 1)));
-    pointer.ty = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (r.height / 2 || 1)));
+    const b = svg.getBoundingClientRect();
+    const inside = e.clientX > b.left && e.clientX < b.right && e.clientY > b.top && e.clientY < b.bottom;
+    pointer.tx = inside ? (e.clientX - (b.left + b.width / 2)) / (b.width / 2) : 0;
+    pointer.ty = inside ? (e.clientY - (b.top + b.height / 2)) / (b.height / 2) : 0;
   };
   addEventListener('pointermove', onMove, { passive: true });
 
-  let raf = 0, visible = false, t0 = performance.now(), shown = false;
-  function frame(now) {
+  let raf = 0, visible = false, shown = false;
+  function frame() {
     raf = requestAnimationFrame(frame);
-    const t = (now - t0) / 1000;
-    const r = box.getBoundingClientRect();
-    const progress = (innerHeight - (r.top + r.height / 2)) / (innerHeight + r.height); // ~0 entering, ~1 leaving
-    pointer.x += (pointer.tx - pointer.x) * 0.06; pointer.y += (pointer.ty - pointer.y) * 0.06;
-    const spin = progress * Math.PI * 1.2 + t * 0.12;
-    if (kind === 'gear') {
-      group.rotation.set(base.x + pointer.y * 0.25, base.y + pointer.x * 0.35, -spin);
-    } else {
-      group.rotation.set(base.x + pointer.y * 0.25, base.y + spin + pointer.x * 0.35, 0);
-    }
+    const b = box.getBoundingClientRect();
+    // -1 = entering at the bottom, 0 = centred, +1 = leaving at the top.
+    const pos = Math.max(-1, Math.min(1, ((innerHeight / 2) - (b.top + b.height / 2)) / (innerHeight / 2 + b.height / 2)));
+    pointer.x += (pointer.tx - pointer.x) * 0.08; pointer.y += (pointer.ty - pointer.y) * 0.08;
+    const away = Math.pow(Math.abs(pos), 1.3);                     // 0 when centred
+    const hover = Math.min(1, Math.hypot(pointer.x, pointer.y));
+    uniforms.uSpread.value = away * 150 + hover * 60;
+    mesh.rotation.y = pos * 0.7 + pointer.x * 0.45;
+    mesh.rotation.x = -pos * 0.25 + pointer.y * 0.3;
     renderer.render(scene, camera);
     if (!shown) { shown = true; box.classList.add('art-3d'); }
   }
@@ -116,14 +131,14 @@ export function mount(box, kind) {
   io.observe(box);
   const onVis = () => (document.hidden ? stop() : run());
   document.addEventListener('visibilitychange', onVis);
-  const ro = new ResizeObserver(() => { size(); if (!raf) renderer.render(scene, camera); });
+  const ro = new ResizeObserver(fit);
   ro.observe(box);
-  size();
+  fit();
 
   return function dispose() {
     stop(); io.disconnect(); ro.disconnect();
     removeEventListener('pointermove', onMove); document.removeEventListener('visibilitychange', onVis);
-    geo.dispose(); mat.dispose(); mesh.dispose(); renderer.dispose(); canvas.remove();
+    geo.dispose(); mat.dispose(); renderer.dispose(); canvas.remove();
     box.classList.remove('art-3d');
   };
 }

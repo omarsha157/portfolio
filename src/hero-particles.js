@@ -58,6 +58,7 @@ varying float vAlpha;
 varying float vKind;
 void main() {
   gl_FragColor = vec4(vKind > 1.5 ? uAccent : uInk, vAlpha);
+  #include <colorspace_fragment>
 }`;
 
 export function start(h1) {

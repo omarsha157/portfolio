@@ -233,3 +233,6 @@ a:hover .arrow { transform: translateX(3px); }
 [data-art] { position: relative; }
 .art-canvas { position: absolute; display: block; pointer-events: none; }
 .art-3d .dot-art { visibility: hidden; }
+
+/* turned 3D art may reach past the content edge; never let it widen the page */
+main { overflow-x: clip; }

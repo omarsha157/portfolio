@@ -28,7 +28,7 @@ if (can3D) {
       for (const e of entries) {
         if (!e.isIntersecting) continue;
         io.unobserve(e.target);
-        (lib ||= import('./project-art.js')).then((m) => { const d = m.mount(e.target, e.target.dataset.art); if (d) disposers.push(d); }).catch(() => {});
+        (lib ||= import('./project-art.js')).then((m) => { const d = m.mount(e.target, e.target.dataset.art, Number(e.target.dataset.seed) || 3); if (d) disposers.push(d); }).catch(() => {});
       }
     }, { rootMargin: '300px 0px' });
     arts.forEach((a) => io.observe(a));

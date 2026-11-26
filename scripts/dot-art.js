@@ -50,11 +50,11 @@ export const shapes = {
   },
 };
 
-export function dotArt(kind, { cols = 46, rows = 40, seed = 7, label = '' } = {}) {
+// The squares of an illustration: [x, y, size] in viewBox units (10 per cell).
+export function dotCells(kind, { cols = 46, rows = 40, seed = 7 } = {}) {
   const f = shapes[kind];
   const rand = rng(seed);
-  const step = 10;
-  let d = '';
+  const step = 10, cells = [];
   for (let j = 0; j < rows; j++) {
     for (let i = 0; i < cols; i++) {
       const x = (i + 0.5) / cols, y = (j + 0.5) / rows;
@@ -62,9 +62,13 @@ export function dotArt(kind, { cols = 46, rows = 40, seed = 7, label = '' } = {}
       v += (rand() - 0.5) * 0.14;                       // grain
       if (v < 0.12) { if (rand() > 0.985) v = 0.25; else continue; } // sparse speckle
       const size = Math.max(1, Math.min(7, Math.round(1 + v * 6)));
-      const ox = i * step + (step - size) / 2, oy = j * step + (step - size) / 2;
-      d += `M${ox} ${oy}h${size}v${size}h-${size}z`;
+      cells.push([i * step + (step - size) / 2, j * step + (step - size) / 2, size]);
     }
   }
-  return `<svg class="dot-art" viewBox="0 0 ${cols * step} ${rows * step}" role="img" aria-label="${label}"><path d="${d}"/></svg>`;
+  return cells;
+}
+
+export function dotArt(kind, { cols = 46, rows = 40, seed = 7, label = '' } = {}) {
+  const d = dotCells(kind, { cols, rows, seed }).map(([x, y, s]) => `M${x} ${y}h${s}v${s}h-${s}z`).join('');
+  return `<svg class="dot-art" viewBox="0 0 ${cols * 10} ${rows * 10}" role="img" aria-label="${label}"><path d="${d}"/></svg>`;
 }
