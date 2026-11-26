@@ -32,3 +32,12 @@ if (form) {
     button.disabled = false;
   });
 }
+
+// Copy-email button.
+for (const b of document.querySelectorAll('[data-copy]')) {
+  b.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = 'Copied'; }
+    catch { b.textContent = 'Copy failed — select it above'; }
+    setTimeout(() => { b.textContent = 'Copy address'; }, 2000);
+  });
+}

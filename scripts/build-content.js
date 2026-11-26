@@ -193,33 +193,50 @@ function contactForm() {
   const key = site.turnstileSiteKey;
   const off = key ? '' : ' disabled';
   return `<form class="card contact-form" action="/api/contact" method="post" novalidate aria-describedby="form-note">
-    <h2 class="h-md">Send a message</h2>
-    <p id="form-note" class="note">${key ? 'I usually reply within a couple of days.' : 'The form isn’t switched on yet. Please use email for now.'}</p>
-    <label>Name <input name="name" autocomplete="name" maxlength="100" required${off}></label>
-    <label>Email <input name="email" type="email" autocomplete="email" maxlength="200" required${off}></label>
+    <div class="form-head">
+      <h2 class="h-md">Send a message</h2>
+      <p id="form-note" class="note">${key ? 'It goes straight to my inbox, and I’ll reply by email.' : 'The form isn’t switched on yet. Please use email for now.'}</p>
+    </div>
+    <div class="form-row">
+      <label>Name <input name="name" autocomplete="name" maxlength="100" required${off}></label>
+      <label>Email <input name="email" type="email" autocomplete="email" maxlength="200" required${off}></label>
+    </div>
     <label>Message <textarea name="message" rows="5" maxlength="5000" required${off}></textarea></label>
     <label class="hp" aria-hidden="true">Company <input name="company" tabindex="-1" autocomplete="off"></label>
     ${key ? `<div class="cf-turnstile" data-sitekey="${esc(key)}" data-theme="light" data-size="flexible"></div>` : ''}
-    <button class="btn" type="submit"${off}><span class="btn-icon" aria-hidden="true">${arrow}</span>Send</button>
-    <p class="form-status" role="status" aria-live="polite"></p>
+    <div class="form-foot">
+      <p class="form-status" role="status" aria-live="polite"></p>
+      <button class="btn" type="submit"${off}><span class="btn-icon" aria-hidden="true">${arrow}</span>Send message</button>
+    </div>
   </form>${key ? '\n<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>' : ''}`;
 }
 const contact = read(C('contact.md'));
 const email = isTodo(site.email) ? t(site.email) : `<a href="mailto:${esc(site.email)}">${esc(site.email)}</a>`;
+const handle = (url) => { try { const u = new URL(url); return u.pathname.replace(/^\/(in\/)?/, '').replace(/\/$/, '').replace(/^@?/, '@'); } catch { return ''; } };
 write('/contact/', {
   title: contact.data.title, description: contact.data.description,
   body: `<section class="page-head wrap">
   <p class="kicker in d1">Contact</p>
   <h1 class="dot-title in d1">Contact</h1>
   <div class="lede in d2">${md(contact.content).replace('<!-- contact -->', '')}</div>
-  <p class="contact-email in d2">${email}</p>
 </section>
 <section class="wrap contact-grid">
+  <aside class="contact-side in d2">
+    <div class="side-block">
+      <p class="cap-label">Email</p>
+      <p class="contact-email">${email}</p>
+      ${isTodo(site.email) ? '' : `<button class="copy" type="button" data-copy="${esc(site.email)}">Copy address</button>`}
+    </div>
+    <div class="side-block">
+      <p class="cap-label">Elsewhere</p>
+      <ul class="elsewhere">${site.links.map((l) => `<li>${isTodo(l.url) ? `${esc(l.label)} <span class="ph">${esc(l.url.replace(TODO_RE, '$1'))}</span>` : `<a href="${esc(l.url)}" rel="me noopener"><span>${esc(l.label)}</span><span class="handle">${esc(handle(l.url))}</span>${arrow}</a>`}</li>`).join('')}</ul>
+    </div>
+    <div class="side-block">
+      <p class="cap-label">Based in</p>
+      <p class="side-text">${t(site.location)} · IST (UTC+5:30)</p>
+    </div>
+  </aside>
   ${contactForm()}
-  <div>
-    <h2 class="h-md">Elsewhere</h2>
-    <ul class="elsewhere">${site.links.map((l) => `<li>${isTodo(l.url) ? `${esc(l.label)} <span class="ph">${esc(l.url.replace(TODO_RE, '$1'))}</span>` : `<a href="${esc(l.url)}" rel="me noopener">${esc(l.label)} ${arrow}</a>`}</li>`).join('')}</ul>
-  </div>
 </section>`,
 });
 

@@ -152,25 +152,39 @@ a:hover .arrow { transform: translateX(3px); }
 .pending::before { content: ""; display: inline-block; width: 6px; height: 6px; border-radius: 50%; border: 1.5px solid var(--accent); margin-right: 8px; vertical-align: 1px; }
 
 /* ---------- contact ---------- */
-.contact-email { font-size: clamp(1.3rem, 3vw, 2rem); letter-spacing: -.02em; margin: 28px 0 0; }
+.contact-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; padding-bottom: 120px; align-items: start; }
+@media (min-width: 900px) { .contact-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: clamp(48px, 6vw, 96px); } }
+.contact-side { display: grid; gap: 36px; }
+.side-block .cap-label { margin: 0 0 12px; }
+.contact-email { font-size: clamp(1.25rem, 2.4vw, 1.6rem); letter-spacing: -.02em; margin: 0; overflow-wrap: anywhere; }
 .contact-email a { text-decoration-color: var(--accent); text-underline-offset: 6px; }
-.contact-grid { display: grid; gap: 48px; padding-bottom: 120px; align-items: start; }
-@media (min-width: 860px) { .contact-grid { grid-template-columns: 1.4fr 1fr; } }
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: clamp(20px, 3vw, 32px); }
-.contact-form { display: grid; gap: 16px; }
-.contact-form label { display: grid; gap: 6px; color: var(--grey); font-size: 14px; }
-.contact-form input, .contact-form textarea { background: var(--white); border: 1px solid var(--line); color: var(--ink); border-radius: 10px; padding: 12px 14px; font: inherit; }
-.contact-form button { justify-self: start; }
+.copy { margin-top: 12px; background: none; border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; font: 500 13px/1 var(--sans); color: var(--ink); cursor: pointer; }
+.copy:hover { border-color: var(--ink); }
+.side-text { margin: 0; font-size: 16px; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 22px; padding: clamp(20px, 3vw, 36px); }
+.contact-form { display: grid; gap: 18px; position: relative; }
+.form-head .h-md { margin: 0 0 6px; }
+.form-row { display: grid; gap: 18px; }
+@media (min-width: 600px) { .form-row { grid-template-columns: 1fr 1fr; } }
+.contact-form label { display: grid; gap: 6px; color: var(--grey); font-size: 14px; min-width: 0; }
+.contact-form input, .contact-form textarea { width: 100%; background: var(--white); border: 1px solid var(--line); color: var(--ink); border-radius: 10px; padding: 12px 14px; font: inherit; transition: border-color .2s; }
+.contact-form textarea { resize: vertical; min-height: 140px; }
+.contact-form input:focus, .contact-form textarea:focus { outline: none; border-color: var(--ink); box-shadow: 0 0 0 3px rgba(18,18,17,.08); }
+.form-foot { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding-top: 4px; }
+.form-foot .btn { margin-left: auto; }
+@media (max-width: 599px) { .form-foot { flex-direction: column-reverse; align-items: stretch; } .form-foot .btn { margin: 0; justify-content: center; } }
 .note { color: var(--grey); font-size: 14.5px; margin: 0; }
 .contact-form .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
-.contact-form { position: relative; }
 .cf-turnstile { min-height: 65px; }
-.form-status { margin: 0; font-size: 14.5px; min-height: 1.4em; }
+.form-status { margin: 0; font-size: 14.5px; }
+.form-status:empty { display: none; }
 .form-status.ok { color: var(--ink); }
 .form-status.err { color: var(--accent); }
 .elsewhere { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--line); }
-.elsewhere li { padding: 16px 0; border-bottom: 1px solid var(--line); }
-.elsewhere a { display: flex; justify-content: space-between; text-decoration: none; }
+.elsewhere li { border-bottom: 1px solid var(--line); }
+.elsewhere a { display: flex; align-items: center; gap: 12px; padding: 14px 0; text-decoration: none; }
+.elsewhere .handle { margin-left: auto; color: var(--grey); font-size: 14px; }
+.elsewhere .arrow { flex: none; }
 .elsewhere a:hover { color: var(--accent); }
 
 /* ---------- footer ---------- */
