@@ -1,3 +1,4 @@
+import { once } from './once.js';
 // Hero particles (three.js), loaded only on the home page, only where it will run well.
 // The hero name is hidden while they load; any failure brings the plain text back.
 const can3D = !matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -8,11 +9,11 @@ const heroName = document.querySelector('.dot-hero');
 const canParticles = heroName && can3D;
 if (canParticles) {
   const hero = heroName.closest('.hero');
-  hero.classList.add('particles-pending');
-  heroName.classList.remove('in', 'd1');
+  const intro = once('intro:hero');
+  if (intro) { hero.classList.add('particles-pending'); heroName.classList.remove('in', 'd1'); }
   const giveUp = setTimeout(() => hero.classList.remove('particles-pending'), 4000);
   Promise.all([import('./hero-particles.js'), document.fonts.load('800 64px "Doto Variable"')])
-    .then(([m]) => { clearTimeout(giveUp); if (!m.start(heroName)) throw new Error('no webgl'); })
+    .then(([m]) => { clearTimeout(giveUp); if (!m.start(heroName, { intro })) throw new Error('no webgl'); })
     .catch(() => {})
     .finally(() => hero.classList.remove('particles-pending'));
 }

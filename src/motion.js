@@ -4,6 +4,7 @@
 // Nothing here holds or hijacks scrolling: the page always scrolls normally.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { seen, mark } from './once.js';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -37,7 +38,9 @@ export function start() {
   ];
   for (const el of decodeTargets) {
     if (el.children.length) continue;  // only plain-text elements
-    ScrollTrigger.create({ trigger: el, start: 'top 90%', once: true, onEnter: () => decode(el) });
+    const key = `decode:${el.textContent.trim()}`;
+    if (seen(key)) continue;   // each label decodes once per visit, the first time it is actually seen
+    ScrollTrigger.create({ trigger: el, start: 'top 90%', once: true, onEnter: () => { mark(key); decode(el); } });
   }
 
   // Staggered reveals. .reveal blocks are hidden by CSS until JS shows them, so nothing flashes.

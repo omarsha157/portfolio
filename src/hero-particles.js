@@ -61,7 +61,7 @@ void main() {
   #include <colorspace_fragment>
 }`;
 
-export function start(h1) {
+export function start(h1, { intro = true } = {}) {
   const hero = h1.closest('.hero');
   const canvas = document.createElement('canvas');
   canvas.className = 'hero-canvas';
@@ -198,7 +198,7 @@ export function start(h1) {
   addEventListener('pointermove', onMove, { passive: true });
   addEventListener('pointerdown', onMove, { passive: true });
 
-  let raf = 0, visible = true, t0 = performance.now(), introDone = false, lastText = 0;
+  let raf = 0, visible = true, t0 = performance.now(), introDone = !intro, lastText = intro ? 0 : 1;
   function frame(now) {
     raf = requestAnimationFrame(frame);
     const t = (now - t0) / 1000;
@@ -233,6 +233,7 @@ export function start(h1) {
   addEventListener('resize', onResize);
 
   build();
+  if (!intro) { uniforms.uIntro.value = 1; uniforms.uLetters.value = 0; h1.style.color = 'rgb(18 18 17 / 1)'; }
   hero.classList.add('particles-on');
   run();
 
