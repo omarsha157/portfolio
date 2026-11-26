@@ -305,3 +305,6 @@ main { overflow-x: clip; }
 }
 
 main:focus { outline: none; }
+
+/* The hero name is a graphic you play with, not text to select. */
+.dot-hero { cursor: default; -webkit-user-select: none; user-select: none; }
