@@ -4,9 +4,15 @@ description: "Full-stack web developer in India working in Angular, Node.js and 
 draft: true
 ---
 
-I'm a full-stack web developer based in India. At work I build with Angular, Node.js and PostgreSQL. {{TODO: years of experience and the kind of work you do professionally — no client names unless you want them}}
+I'm a full-stack web developer based in India. I have over three and a half years of professional experience. At work I build with Angular, Node.js and PostgreSQL: web app extensions for an ERP system, and web apps for a testing team.
+
+I also have some graphic design and UI/UX experience, working in Figma and Photoshop.
 
 In my own time I work on two side projects, an automated bug-fix pipeline and configurable 3D interfaces, and I run a home server.
+
+## What I'm looking for
+
+A full-time full-stack developer role.
 
 ## How I work
 
@@ -19,5 +25,3 @@ I run my own server at home. It started on Proxmox, hosting self-hosted services
 ## Skills
 
 <!-- skills -->
-
-{{TODO: anything else you want here — education, what you're looking for, interests}}

@@ -20,7 +20,6 @@
       "url": "https://hashnode.com/@omarsha"
     }
   ],
-  "photo": "{{TODO: photo, or remove this line for no photo}}",
   "domain": "omarsha.com",
   "turnstileSiteKey": "0x4AAAAAAGT33dQ6zvC5QONo",
   "skills": {
@@ -39,6 +38,11 @@
       "Docker",
       "Cloudflare Tunnel",
       "nginx"
+    ],
+    "Design": [
+      "Figma",
+      "Photoshop",
+      "UI/UX"
     ]
   },
   "workIntro": "Two side projects I’m building now. Both are *in progress*.",
