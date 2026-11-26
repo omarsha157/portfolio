@@ -4,23 +4,25 @@ description: "Full-stack web developer in India working in Angular, Node.js and 
 draft: true
 ---
 
-I'm a full-stack web developer based in India. I have over three and a half years of professional experience. At work I build with Angular, Node.js and PostgreSQL: web app extensions for an ERP system, and web apps for a testing team.
+I'm a full-stack web developer in India with over three and a half years of professional experience. I build web applications end to end in Angular, Node.js and PostgreSQL: the interface, the APIs and the database behind them.
 
-I also have some graphic design and UI/UX experience, working in Figma and Photoshop.
+At work I've built across a range of products, including extensions for an ERP system and internal applications for QA teams.
 
-In my own time I work on two side projects, an automated bug-fix pipeline and configurable 3D interfaces, and I run a home server.
+Design is part of my work too. I do UI/UX and graphic design in Figma and Photoshop, and I build the interfaces I design.
+
+Outside work I'm building two projects, an automated bug-fix pipeline and configurable 3D interfaces, and I run my own home server.
 
 ## What I'm looking for
 
-A full-time full-stack developer role.
+A full-time full-stack developer role, working across the front end, the back end and the database.
 
 ## How I work
 
-I own my projects end to end: I decide what to build and how it is structured, set the rules the code has to follow, test every change, and deploy and run it myself. I use AI tools to speed up the implementation.
+I take projects from start to finish: I plan what to build, design the structure, set the rules the code follows, test every change, and deploy and run it myself. I use AI tools to move faster on implementation.
 
 ## Homelab
 
-I run my own server at home. It started on Proxmox, hosting self-hosted services like Jellyfin (media), Immich (photos), Kiwix (offline Wikipedia) and Kavita (books and comics). Today it runs Ubuntu Server with everything in Docker containers, published to the internet through Cloudflare Tunnel.
+I run a home server for my own services: Jellyfin for media, Immich for photos, Kiwix for offline Wikipedia and Kavita for books and comics. It began on Proxmox and now runs Ubuntu Server, with every service in Docker and published through Cloudflare Tunnel.
 
 ## Skills
 
