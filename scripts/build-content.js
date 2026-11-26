@@ -106,24 +106,7 @@ ${footer()}
 `;
 }
 
-// Footer: the dot-matrix sign-off, then a frosted panel of links over drifting dots,
-// with a small pixel figure on the bottom rule.
-const WALKER = {
-  // 16 x 18 sprite, facing right. '#' ink, 'o' accent (the laptop), '.' empty.
-  head: ['.....####.......', '....######......', '....####.#......', '....######......', '.....####.......', '......##........'],
-  carry: ['.....####.......', '....######......', '....######......', '...##.####......', '..##..#####oooo.', '......####.oooo.', '.....######.....'],
-  walkA: ['.....##..##.....', '....##....##....', '...##......##...', '..##........##..', '..#..........##.'],
-  walkB: ['......####......', '......####......', '.....##.##......', '.....##.##......', '....###.###.....'],
-  sit: ['.....####.......', '....######...o..', '....######...o..', '....#####.#..o..', '....#####..#.o..', '....######.ooooo', '....##########..', '....####....##..', '....####....##..', '...#####...###..'],
-};
-function sprite(rows, cls) {
-  let d = '', a = '';
-  rows.forEach((row, y) => [...row].forEach((c, x) => {
-    const sq = `M${x} ${y + (18 - rows.length)}h1v1h-1z`;
-    if (c === '#') d += sq; else if (c === 'o') a += sq;
-  }));
-  return `<g class="${cls}"><path d="${d}"/><path class="lap" d="${a}"/></g>`;
-}
+// Footer: the dot-matrix sign-off, then a panel of links styled like the top bar, at its width.
 function footer() {
   const ok = (l) => !isTodo(l.url);
   const col = (h, items) => `<div class="foot-col"><p class="col-h">${esc(h)}</p><ul>${items.join('')}</ul></div>`;
@@ -134,26 +117,23 @@ function footer() {
     ...(isTodo(site.email) ? [] : [li(`mailto:${site.email}`, 'Email')]),
     ...site.links.filter(ok).map((l) => li(l.url, l.label, true)),
   ]);
-  const walker = `<svg class="walker" viewBox="0 0 16 18" aria-hidden="true">${sprite([...WALKER.head, ...WALKER.carry, ...WALKER.walkA], 'f-a')}${sprite([...WALKER.head, ...WALKER.carry, ...WALKER.walkB], 'f-b')}${sprite([...WALKER.head, ...WALKER.sit], 'f-sit')}</svg>`;
   return `<footer class="foot">
   <div class="wrap">
     <p class="dot-xl"><a href="/contact/">Let’s talk.</a></p>
-    <div class="foot-panel">
-      <div class="foot-dots" aria-hidden="true">${'<i></i>'.repeat(9)}</div>
-      <div class="panel-glass">
-        <div class="panel-top">
-          <a class="brand" href="/"><span class="mono-tile" aria-hidden="true">${esc(initials)}</span><span>${esc(wordmark)}</span></a>
-          <a class="to-top" href="#main">Back to top <span aria-hidden="true">↑</span></a>
-        </div>
-        <div class="panel-body">
-          <nav class="foot-cols" aria-label="Footer">${pages}${work}${elsewhere}</nav>
-          <a class="pill" href="/contact/">Send me a message <span aria-hidden="true">→</span></a>
-        </div>
-        <div class="panel-ground">${walker}</div>
-        <div class="panel-bottom">
-          <p>${t(site.footer)}</p>
-          <p>${t(site.location)} · <span class="clock" data-tz="Asia/Kolkata">IST (UTC+5:30)</span></p>
-        </div>
+  </div>
+  <div class="foot-shell">
+    <div class="foot-bar">
+      <div class="panel-top">
+        <a class="brand" href="/"><span class="mono-tile" aria-hidden="true">${esc(initials)}</span><span>${esc(wordmark)}</span></a>
+        <a class="to-top" href="#main">Back to top <span aria-hidden="true">↑</span></a>
+      </div>
+      <div class="panel-body">
+        <nav class="foot-cols" aria-label="Footer">${pages}${work}${elsewhere}</nav>
+        <a class="pill" href="/contact/">Send me a message <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="panel-bottom">
+        <p>${t(site.footer)}</p>
+        <p>${t(site.location)} · <span class="clock" data-tz="Asia/Kolkata">IST (UTC+5:30)</span></p>
       </div>
     </div>
   </div>
