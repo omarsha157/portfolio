@@ -16,11 +16,16 @@ const vert = /* glsl */ `
 attribute vec3 aOffset;     // square centre (x, y) in viewBox units, centred on 0
 attribute float aSize;
 attribute float aSeed;
-uniform float uSpread;
+attribute vec3 aStart;      // where the block flies in from on first view
+uniform float uSpread, uIntro;
 varying vec3 vNormal;
 void main() {
-  vec3 p = position * aSize + aOffset;
-  p.z += (aSeed - 0.5) * uSpread;
+  // First view: staggered flight from a scattered start into the drawing, blocks growing in.
+  float t = clamp(uIntro * 1.7 - aSeed * 0.7, 0.0, 1.0);
+  float e = 1.0 - pow(1.0 - t, 4.0);
+  vec3 home = aOffset + vec3(0.0, 0.0, (aSeed - 0.5) * uSpread);
+  vec3 swirl = vec3(-(home.y - aStart.y), home.x - aStart.x, 0.0) * 0.18 * sin(t * 3.14159);
+  vec3 p = position * aSize * smoothstep(0.0, 0.3, t) + mix(aStart, home, e) + swirl;
   vNormal = normalize(normalMatrix * normal);
   gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
 }`;
@@ -60,18 +65,21 @@ export function mount(box, kind, seed) {
   // Same squares as the SVG (same function, same seed).
   const cells = dotCells(kind, { cols: COLS, rows: ROWS, seed });
   const n = cells.length;
-  const offset = new Float32Array(n * 3), size = new Float32Array(n), seeds = new Float32Array(n);
+  const offset = new Float32Array(n * 3), size = new Float32Array(n), seeds = new Float32Array(n), starts = new Float32Array(n * 3);
   let r = (seed * 7919) % 233280;
   const rand = () => ((r = (r * 9301 + 49297) % 233280) / 233280);
   cells.forEach(([x, y, s], i) => {
     offset.set([x + s / 2 - VW / 2, VH / 2 - (y + s / 2), 0], i * 3);
     size[i] = s; seeds[i] = rand();
+    const a = rand() * Math.PI * 2, d = (0.45 + rand() * 0.7) * VW;
+    starts.set([Math.cos(a) * d, Math.sin(a) * d * 0.8, (rand() - 0.5) * VW], i * 3);
   });
   const geo = new InstancedBufferGeometry().copy(new BoxGeometry(1, 1, 1));
   geo.instanceCount = n;
   geo.setAttribute('aOffset', new InstancedBufferAttribute(offset, 3));
   geo.setAttribute('aSize', new InstancedBufferAttribute(size, 1));
   geo.setAttribute('aSeed', new InstancedBufferAttribute(seeds, 1));
+  geo.setAttribute('aStart', new InstancedBufferAttribute(starts, 3));
 
   // Front colour = the SVG's ink at 82% over the page background, as a solid colour.
   const css = getComputedStyle(document.documentElement);
@@ -81,7 +89,7 @@ export function mount(box, kind, seed) {
   const bg = srgb(css.getPropertyValue('--bg').trim() || '#eeece7');
   const mixed = (t) => bg.clone().lerp(ink, t).convertSRGBToLinear();
   const uniforms = {
-    uSpread: { value: 0 },
+    uSpread: { value: 0 }, uIntro: { value: 0 },
     uFront: { value: mixed(0.82) },
     uSide: { value: mixed(0.45) },
   };
@@ -110,9 +118,10 @@ export function mount(box, kind, seed) {
   };
   addEventListener('pointermove', onMove, { passive: true });
 
-  let raf = 0, visible = false, shown = false;
-  function frame() {
+  let raf = 0, visible = false, shown = false, introStart = 0;
+  function frame(now) {
     raf = requestAnimationFrame(frame);
+    if (introStart) uniforms.uIntro.value = Math.min(1, (now - introStart) / 2200);
     const b = box.getBoundingClientRect();
     // -1 = entering at the bottom, 0 = centred, +1 = leaving at the top.
     const pos = Math.max(-1, Math.min(1, ((innerHeight / 2) - (b.top + b.height / 2)) / (innerHeight / 2 + b.height / 2)));
@@ -127,7 +136,12 @@ export function mount(box, kind, seed) {
   }
   const run = () => { if (!raf && visible && !document.hidden) raf = requestAnimationFrame(frame); };
   const stop = () => { cancelAnimationFrame(raf); raf = 0; };
-  const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; visible ? run() : stop(); });
+  // Draw while on screen; the fly-in starts once a third of the art is visible.
+  const io = new IntersectionObserver(([e]) => {
+    visible = e.isIntersecting;
+    if (!introStart && e.intersectionRatio >= 0.35) introStart = performance.now();
+    visible ? run() : stop();
+  }, { threshold: [0, 0.35] });
   io.observe(box);
   const onVis = () => (document.hidden ? stop() : run());
   document.addEventListener('visibilitychange', onVis);
