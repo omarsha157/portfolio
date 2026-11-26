@@ -36,7 +36,7 @@ Results coming. The table below will be filled from real runs, including the fix
 
 {{TODO: where the test bugs come from — real errors, seeded bugs, or both}}
 
-## Honest limits
+## Known limits
 
 - It is not finished, and there are no results yet.
 - A generated test can pass for the wrong reason; a green CI run is not proof that the fix is right.

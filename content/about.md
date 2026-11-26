@@ -6,11 +6,11 @@ draft: true
 
 I'm a full-stack web developer based in India. At work I build with Angular, Node.js and PostgreSQL. {{TODO: years of experience and the kind of work you do professionally — no client names unless you want them}}
 
-Outside work I'm interested in the parts of software that are usually hard: automating parts of bug fixing safely, presenting the same features in different forms, and running software on my own hardware.
+In my own time I work on two side projects, an automated bug-fix pipeline and configurable 3D interfaces, and I run a home server.
 
 ## How I work
 
-I own my projects end to end: I decide what to build and how it is structured, set the rules the code has to follow, test every change, and deploy and run it myself. I use AI tools to speed up the implementation, which lets me take on bigger, harder systems.
+I own my projects end to end: I decide what to build and how it is structured, set the rules the code has to follow, test every change, and deploy and run it myself. I use AI tools to speed up the implementation.
 
 ## Homelab
 

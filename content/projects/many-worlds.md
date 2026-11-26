@@ -33,7 +33,7 @@ Results coming. These will be measured, not estimated:
 | Frame rate on a mid-range phone | {{TODO: which phone}}, in-browser frame timing | {{TODO: in progress}} |
 | Task time, 3D vs 2D | The same tasks done in both versions | {{TODO: in progress}} |
 
-## Honest limits
+## Known limits
 
 - It is not finished, and there are no results yet.
 - A 3D interface is not automatically better; the task-time comparison is there to find out when it is worse.
