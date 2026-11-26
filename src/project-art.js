@@ -128,8 +128,10 @@ export function mount(box, kind, seed) {
     pointer.x += (pointer.tx - pointer.x) * 0.08; pointer.y += (pointer.ty - pointer.y) * 0.08;
     const away = Math.pow(Math.abs(pos), 1.3);                     // 0 when centred
     const hover = Math.min(1, Math.hypot(pointer.x, pointer.y));
-    uniforms.uSpread.value = away * 150 + hover * 60;
-    mesh.rotation.y = pos * 0.7 + pointer.x * 0.45;
+    // While its project is pinned (desktop), the art makes one full turn, opening up mid-turn.
+    const turn = box.__turn || 0;
+    uniforms.uSpread.value = away * 150 + hover * 60 + Math.sin(turn * Math.PI) * 170;
+    mesh.rotation.y = pos * 0.7 + pointer.x * 0.45 + turn * Math.PI * 2;
     mesh.rotation.x = -pos * 0.25 + pointer.y * 0.3;
     renderer.render(scene, camera);
     if (!shown) { shown = true; box.classList.add('art-3d'); }

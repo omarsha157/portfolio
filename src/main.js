@@ -37,16 +37,20 @@ if (can3D) {
 // Free GPU memory when leaving the page.
 addEventListener('pagehide', () => { while (disposers.length) disposers.pop()(); });
 
-// Reveal rows as they scroll in. Content is visible without JS; reduced motion skips this entirely.
+// Scroll motion (GSAP). Content is visible without JS; reduced motion gets no animation;
+// if the motion bundle can't load, the simple reveal below takes over.
 const els = document.querySelectorAll('.reveal');
-if (!('IntersectionObserver' in window) || matchMedia('(prefers-reduced-motion: reduce)').matches) {
-  els.forEach((el) => el.classList.add('seen'));
-} else {
+const showAll = () => els.forEach((el) => el.classList.add('seen'));
+function simpleReveal() {
+  if (!('IntersectionObserver' in window)) return showAll();
   const io = new IntersectionObserver((entries) => {
     for (const e of entries) if (e.isIntersecting) { e.target.classList.add('seen'); io.unobserve(e.target); }
   }, { rootMargin: '0px 0px -8% 0px' });
   els.forEach((el) => io.observe(el));
 }
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) showAll();
+else import('./motion.js').then((m) => m.start()).catch(simpleReveal);
+
 
 // Contact form: send without leaving the page. Without JS the Turnstile check can't run,
 // so the email address above the form is the fallback.
