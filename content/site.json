@@ -22,7 +22,7 @@
   ],
   "photo": "{{TODO: photo, or remove this line for no photo}}",
   "domain": "omarsha.com",
-  "turnstileSiteKey": "",
+  "turnstileSiteKey": "0x4AAAAAAGT33dQ6zvC5QONo",
   "skills": {
     "Professional stack": [
       "Angular",
