@@ -222,3 +222,9 @@ a:hover .arrow { transform: translateX(3px); }
 .cell-text .btn { margin-top: auto; }
 .cell-text .cap-label { font-size: 12.5px; color: var(--grey); }
 .cell .dot-md { margin-top: 0; font-size: clamp(1.5rem, 2.6vw, 1.9rem); line-height: 1; }
+
+/* ---------- hero particles ---------- */
+.hero { position: relative; }
+.hero > :not(.hero-canvas) { position: relative; z-index: 1; }
+.hero-canvas { position: absolute; top: 0; z-index: 0; pointer-events: none; display: block; }
+.particles-pending .dot-hero, .particles-on .dot-hero { color: transparent; }

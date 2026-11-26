@@ -1,3 +1,22 @@
+// Hero particles (three.js), loaded only on the home page, only where it will run well.
+// The hero name is hidden while they load; any failure brings the plain text back.
+const heroName = document.querySelector('.dot-hero');
+const canParticles = heroName
+  && !matchMedia('(prefers-reduced-motion: reduce)').matches
+  && (navigator.hardwareConcurrency || 4) >= 4
+  && (navigator.deviceMemory || 4) >= 2
+  && (() => { try { return !!document.createElement('canvas').getContext('webgl'); } catch { return false; } })();
+if (canParticles) {
+  const hero = heroName.closest('.hero');
+  hero.classList.add('particles-pending');
+  heroName.classList.remove('in', 'd1');
+  const giveUp = setTimeout(() => hero.classList.remove('particles-pending'), 4000);
+  Promise.all([import('./hero-particles.js'), document.fonts.load('800 64px "Doto Variable"')])
+    .then(([m]) => { clearTimeout(giveUp); if (!m.start(heroName)) throw new Error('no webgl'); })
+    .catch(() => {})
+    .finally(() => hero.classList.remove('particles-pending'));
+}
+
 
 // Reveal rows as they scroll in. Content is visible without JS; reduced motion skips this entirely.
 const els = document.querySelectorAll('.reveal');
