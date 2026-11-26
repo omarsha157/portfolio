@@ -1,7 +1,7 @@
 // Scroll motion (GSAP + ScrollTrigger). Loaded only when the visitor allows motion.
 // - Dot-matrix headings "decode" like a departure board when they come into view.
 // - Content blocks come in one after another instead of a single fade.
-// - On desktop each project holds still briefly while its 3D art makes one full turn.
+// Nothing here holds or hijacks scrolling: the page always scrolls normally.
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -59,21 +59,6 @@ export function start() {
   ScrollTrigger.batch(later, {
     start: 'top 88%', once: true,
     onEnter: (els) => gsap.to(els, { opacity: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.08, clearProps: 'transform' }),
-  });
-
-  // Desktop: pin each project while its art turns once (the art reads box.__turn, 0..1).
-  const mm = gsap.matchMedia();
-  mm.add('(min-width: 900px)', () => {
-    for (const f of document.querySelectorAll('.features .feature')) {
-      const art = f.querySelector('[data-art]');
-      if (!art) continue;
-      ScrollTrigger.create({
-        trigger: f, start: 'center center', end: '+=55%', pin: true, scrub: true,
-        onUpdate: (self) => { art.__turn = self.progress; },
-        onLeave: () => { art.__turn = 1; }, onLeaveBack: () => { art.__turn = 0; },
-      });
-    }
-    return () => document.querySelectorAll('[data-art]').forEach((a) => { a.__turn = 0; });
   });
 
   // Fonts and 3D canvases can change heights after load; re-measure once things settle.
