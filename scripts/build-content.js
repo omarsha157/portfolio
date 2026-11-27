@@ -156,7 +156,7 @@ const projects = fs.readdirSync(C('projects')).filter((f) => f.endsWith('.md'))
   .sort((a, b) => a.data.order - b.data.order)
   .map((p) => ({ ...p.data, href: `/work/${p.data.slug}/`, body: p.content }));
 for (const p of projects) if (p.draft) drafts.push(`work/${p.slug}`);
-const ART = { 'self-managing': ['gear', 11], 'many-worlds': ['cube', 5] };
+const ART = { 'self-managing': ['gear', 11], 'spatial-ui': ['cube', 5] };
 const art = (p) => dotArt(ART[p.slug]?.[0] || 'loop', { seed: ART[p.slug]?.[1] || 3, label: `Dot illustration for ${p.title}` });
 const num = (i) => String(i + 1).padStart(2, '0');
 
@@ -189,7 +189,7 @@ write('/', {
 
 // Work index + project pages
 write('/work/', {
-  title: 'Work', description: 'Two in-progress projects: an automated bug-fix pipeline and configurable 3D interfaces.',
+  title: 'Work', description: 'Two in-progress projects: an automated bug-fix pipeline and Spatial UI, everyday apps rebuilt as first-person 3D scenes.',
   body: `<section class="page-head wrap">
   <p class="kicker in d1">Work</p>
   <h1 class="dot-title in d1">Projects</h1>

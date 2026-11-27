@@ -1,6 +1,6 @@
 ---
 title: About
-description: "Full-stack web developer in India working in Angular, Node.js and PostgreSQL, with side projects in automated bug fixing and configurable 3D interfaces."
+description: "Full-stack web developer in India working in Angular, Node.js and PostgreSQL, with side projects in automated bug fixing and first-person 3D app interfaces."
 draft: true
 ---
 
@@ -10,7 +10,7 @@ At work I've built across a range of products, including extensions for an ERP s
 
 Design is part of my work too. I do UI/UX and graphic design in Figma and Photoshop, and I build the interfaces I design.
 
-Outside work I'm building two projects, an automated bug-fix pipeline and configurable 3D interfaces, and I run my own home server.
+Outside work I'm building two projects, an automated bug-fix pipeline and Spatial UI, which rebuilds everyday apps as first-person 3D scenes, and I run my own home server.
 
 ## What I'm looking for
 
